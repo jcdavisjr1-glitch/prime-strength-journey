@@ -86,7 +86,6 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
         mode: isRecurring ? "subscription" : "payment",
         ui_mode: "embedded_page",
         return_url: data.returnUrl,
-        managed_payments: { enabled: true },
         ...(customerId && { customer: customerId }),
         ...(!isRecurring && {
           payment_intent_data: { description: productDescription },
@@ -97,7 +96,8 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
             subscription_data: { metadata: { userId: data.userId } },
           }),
         }),
-      });
+        managed_payments: { enabled: true },
+      } as Stripe.Checkout.SessionCreateParams & { managed_payments: { enabled: boolean } });
 
       return { clientSecret: session.client_secret ?? "" };
     } catch (error) {
