@@ -541,8 +541,16 @@ function Faq() {
 
 function Couples() {
   const photos = [couple1, couple2, couple3, couple4, couple5, couple6];
+  const { openCheckout, closeCheckout, isOpen, checkoutElement } = useStripeCheckout();
+  const handleBuy = () => {
+    openCheckout({
+      priceId: "couples_monthly",
+      returnUrl: `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+    });
+  };
   return (
     <section id="couples" className="py-20 md:py-28">
+
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <SectionLabel>Couples</SectionLabel>
         <h2 className="mt-4 font-display uppercase text-4xl md:text-6xl max-w-3xl text-balance">
