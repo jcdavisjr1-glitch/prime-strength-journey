@@ -1,3 +1,4 @@
+import type Stripe from "stripe";
 import { createServerFn } from "@tanstack/react-start";
 import {
   type StripeEnv,
