@@ -19,8 +19,6 @@ export const Route = createFileRoute("/")({
         content:
           "Strength-first fitness built for your 40s, 50s and beyond. Two workouts a week. 45 minutes. Six weeks to feel different.",
       },
-      { property: "og:image", content: hero },
-      { name: "twitter:image", content: hero },
     ],
   }),
   component: Landing,
