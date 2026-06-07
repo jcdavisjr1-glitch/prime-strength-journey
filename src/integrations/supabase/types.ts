@@ -14,6 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
+      mailing_list: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          source: string
+          subscribed: boolean
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          source?: string
+          subscribed?: boolean
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string
+          subscribed?: boolean
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      one_time_purchases: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          currency: string
+          environment: string
+          grants_lifetime_access: boolean
+          id: string
+          price_id: string
+          product_id: string
+          stripe_customer_id: string
+          stripe_session_id: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          currency?: string
+          environment?: string
+          grants_lifetime_access?: boolean
+          id?: string
+          price_id: string
+          product_id: string
+          stripe_customer_id: string
+          stripe_session_id: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          currency?: string
+          environment?: string
+          grants_lifetime_access?: boolean
+          id?: string
+          price_id?: string
+          product_id?: string
+          stripe_customer_id?: string
+          stripe_session_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           cancel_at_period_end: boolean | null
@@ -68,6 +140,10 @@ export type Database = {
     }
     Functions: {
       has_active_subscription: {
+        Args: { check_env?: string; user_uuid: string }
+        Returns: boolean
+      }
+      has_member_access: {
         Args: { check_env?: string; user_uuid: string }
         Returns: boolean
       }
