@@ -158,9 +158,13 @@ async function handleWebhook(req: Request, env: StripeEnv) {
     case "customer.subscription.deleted":
       await handleSubscriptionDeleted(event.data.object, env);
       break;
+    case "checkout.session.completed":
+      await handleCheckoutCompleted(event.data.object, env);
+      break;
     default:
       console.log("Unhandled event:", event.type);
   }
+
 }
 
 export const Route = createFileRoute("/api/public/payments/webhook")({
