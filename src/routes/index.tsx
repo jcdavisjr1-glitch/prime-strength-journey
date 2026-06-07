@@ -706,10 +706,10 @@ function Landing() {
         <Truth />
         <Science />
         <HowItWorks />
+        <Couples />
         <Pricing />
         <Testimonials />
         <Faq />
-        <Couples />
         <Cancellation />
         <FinalCta />
       </main>
