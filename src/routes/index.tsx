@@ -1,8 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import hero from "@/assets/hero.jpg";
-import workoutTogether1 from "@/assets/workout-together-1.jpg";
-import workoutTogether2 from "@/assets/workout-together-2.jpg";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
@@ -22,8 +19,6 @@ export const Route = createFileRoute("/")({
         content:
           "Strength-first fitness built for your 40s, 50s and beyond. Two workouts a week. 45 minutes. Six weeks to feel different.",
       },
-      { property: "og:image", content: hero },
-      { name: "twitter:image", content: hero },
     ],
   }),
   component: Landing,
@@ -155,16 +150,6 @@ function Hero() {
               How It Works
             </CtaButton>
           </div>
-        </div>
-        <div className="relative">
-          <div className="absolute -inset-4 bg-primary/20 blur-3xl rounded-full" />
-          <img
-            src={hero}
-            alt="Strong man in his 50s mid-lift"
-            width={1600}
-            height={1024}
-            className="relative rounded-lg border border-border w-full h-auto object-cover aspect-[4/3]"
-          />
         </div>
       </div>
     </section>
@@ -556,28 +541,6 @@ function Couples() {
           friendly competition that ends in both of you winning.
         </p>
 
-        <div className="mt-12 grid md:grid-cols-2 gap-4 md:gap-6">
-          <div className="aspect-[4/5] overflow-hidden rounded-lg border border-border">
-            <img
-              src={workoutTogether1}
-              alt="Couple walking together on a trail"
-              loading="lazy"
-              width={1024}
-              height={1280}
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-            />
-          </div>
-          <div className="aspect-[4/5] overflow-hidden rounded-lg border border-border">
-            <img
-              src={workoutTogether2}
-              alt="Couple working out together outdoors"
-              loading="lazy"
-              width={1024}
-              height={1280}
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-            />
-          </div>
-        </div>
 
         <div className="mt-12 grid md:grid-cols-3 gap-4 md:gap-6">
           {[
