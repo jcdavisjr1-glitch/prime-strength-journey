@@ -7,6 +7,9 @@ import couple3 from "@/assets/couple-3.jpg";
 import couple4 from "@/assets/couple-4.jpg";
 import couple5 from "@/assets/couple-5.jpg";
 import couple6 from "@/assets/couple-6.jpg";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -347,6 +350,7 @@ function HowItWorks() {
 }
 
 function Pricing() {
+  const { openCheckout, closeCheckout, isOpen, checkoutElement } = useStripeCheckout();
   const plans = [
     {
       name: "Single Plan",
@@ -354,6 +358,7 @@ function Pricing() {
       cadence: "one-time",
       desc: "One personalized plan. Yours forever. No subscription.",
       cta: "Start Single",
+      priceId: "single_onetime",
       featured: false,
     },
     {
@@ -362,6 +367,7 @@ function Pricing() {
       cadence: "per month",
       desc: "Full app. New programming every cycle. Cancel anytime.",
       cta: "Go Monthly",
+      priceId: "monthly_sub",
       featured: true,
     },
     {
@@ -370,9 +376,18 @@ function Pricing() {
       cadence: "per year",
       desc: "Best value. Save $149 a year. Same full membership.",
       cta: "Go Annual",
+      priceId: "annual_sub",
       featured: false,
     },
   ];
+
+  const handleBuy = (priceId: string) => {
+    openCheckout({
+      priceId,
+      returnUrl: `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+    });
+  };
+
   return (
     <section id="pricing" className="py-20 md:py-28 bg-surface">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
@@ -400,7 +415,12 @@ function Pricing() {
                 <div className="text-muted-foreground text-sm">{p.cadence}</div>
               </div>
               <p className="mt-4 text-muted-foreground">{p.desc}</p>
-              <CtaButton className="mt-6 w-full">{p.cta}</CtaButton>
+              <button
+                onClick={() => handleBuy(p.priceId)}
+                className="mt-6 w-full inline-flex items-center justify-center font-display tracking-wider uppercase text-base px-6 py-3 rounded-sm bg-primary text-primary-foreground hover:bg-primary-glow shadow-[var(--shadow-red)] transition-all"
+              >
+                {p.cta}
+              </button>
             </div>
           ))}
         </div>
@@ -412,6 +432,15 @@ function Pricing() {
           </p>
         </div>
       </div>
+
+      <Dialog open={isOpen} onOpenChange={(v) => !v && closeCheckout()}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 bg-background">
+          <DialogHeader className="px-6 pt-6">
+            <DialogTitle className="font-display uppercase tracking-wider">Checkout</DialogTitle>
+          </DialogHeader>
+          <div className="p-4">{checkoutElement}</div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
@@ -643,6 +672,7 @@ function Footer() {
 function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <PaymentTestModeBanner />
       <Nav />
       <main>
         <Hero />
