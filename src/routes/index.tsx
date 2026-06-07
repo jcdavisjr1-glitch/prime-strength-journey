@@ -1,12 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import hero from "@/assets/hero.jpg";
-import couple1 from "@/assets/couple-1.jpg";
-import couple2 from "@/assets/couple-2.jpg";
-import couple3 from "@/assets/couple-3.jpg";
-import couple4 from "@/assets/couple-4.jpg";
-import couple5 from "@/assets/couple-5.jpg";
-import couple6 from "@/assets/couple-6.jpg";
+import workoutTogether1 from "@/assets/workout-together-1.jpg";
+import workoutTogether2 from "@/assets/workout-together-2.jpg";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
@@ -540,7 +536,6 @@ function Faq() {
 }
 
 function Couples() {
-  const photos = [couple1, couple2, couple3, couple4, couple5, couple6];
   const { openCheckout, closeCheckout, isOpen, checkoutElement } = useStripeCheckout();
   const handleBuy = () => {
     openCheckout({
@@ -561,22 +556,30 @@ function Couples() {
           friendly competition that ends in both of you winning.
         </p>
 
-        <div className="mt-12 grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-          {photos.map((src, i) => (
-            <div key={i} className="aspect-[4/5] overflow-hidden rounded-lg border border-border">
-              <img
-                src={src}
-                alt="FortyStrong member"
-                loading="lazy"
-                width={800}
-                height={1024}
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-          ))}
+        <div className="mt-12 grid md:grid-cols-2 gap-4 md:gap-6">
+          <div className="aspect-[4/5] overflow-hidden rounded-lg border border-border">
+            <img
+              src={workoutTogether1}
+              alt="Couple walking together on a trail"
+              loading="lazy"
+              width={1024}
+              height={1280}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+          <div className="aspect-[4/5] overflow-hidden rounded-lg border border-border">
+            <img
+              src={workoutTogether2}
+              alt="Couple working out together outdoors"
+              loading="lazy"
+              width={1024}
+              height={1280}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+            />
+          </div>
         </div>
 
-        <div className="mt-16 grid md:grid-cols-3 gap-4 md:gap-6">
+        <div className="mt-12 grid md:grid-cols-3 gap-4 md:gap-6">
           {[
             { n: "94%", l: "Higher adherence when couples train together" },
             { n: "2.3x", l: "More likely to hit 90-day milestones" },
@@ -703,10 +706,10 @@ function Landing() {
         <Truth />
         <Science />
         <HowItWorks />
+        <Couples />
         <Pricing />
         <Testimonials />
         <Faq />
-        <Couples />
         <Cancellation />
         <FinalCta />
       </main>
