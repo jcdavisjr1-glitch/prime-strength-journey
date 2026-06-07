@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
-import { type StripeEnv, verifyWebhook } from "@/lib/stripe.server";
+import { type StripeEnv, verifyWebhook, createStripeClient } from "@/lib/stripe.server";
 
 let _supabase: ReturnType<typeof createClient<any, any, any>> | null = null;
 function getSupabase() {
@@ -11,6 +11,22 @@ function getSupabase() {
     );
   }
   return _supabase;
+}
+
+async function addToMailingList(userId: string | undefined, email: string | undefined, source: string) {
+  if (!email) return;
+  await getSupabase()
+    .from("mailing_list")
+    .upsert(
+      {
+        user_id: userId ?? null,
+        email,
+        source,
+        subscribed: true,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "email" },
+    );
 }
 
 async function handleSubscriptionCreated(subscription: any, env: StripeEnv) {
@@ -43,7 +59,59 @@ async function handleSubscriptionCreated(subscription: any, env: StripeEnv) {
     },
     { onConflict: "stripe_subscription_id" },
   );
+
+  // Add subscriber to members-only mailing list
+  const { data: userData } = await getSupabase().auth.admin.getUserById(userId);
+  await addToMailingList(userId, userData?.user?.email, "subscription");
 }
+
+async function handleCheckoutCompleted(session: any, env: StripeEnv) {
+  // Only process one-time payments here; subscriptions are handled by subscription.created
+  if (session.mode !== "payment") return;
+  const userId = session.metadata?.userId;
+  if (!userId) {
+    console.error("No userId in checkout session metadata");
+    return;
+  }
+
+  // Retrieve line items from Stripe (not included in webhook payload by default)
+  const stripe = createStripeClient(env);
+  const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 1, expand: ["data.price"] });
+  const lineItem = lineItems.data[0];
+  let priceId: string | undefined;
+  let productId: string | undefined;
+  const amountCents = session.amount_total ?? 0;
+
+  if (lineItem?.price) {
+    priceId =
+      lineItem.price.lookup_key ||
+      (lineItem.price.metadata as any)?.lovable_external_id ||
+      lineItem.price.id;
+    productId = typeof lineItem.price.product === "string"
+      ? lineItem.price.product
+      : lineItem.price.product?.id;
+  }
+
+  // Single Plan grants lifetime access
+  const grantsLifetime = priceId === "single_plan";
+
+
+  await getSupabase().from("one_time_purchases").upsert(
+    {
+      user_id: userId,
+      stripe_session_id: session.id,
+      stripe_customer_id: session.customer,
+      product_id: productId ?? "unknown",
+      price_id: priceId ?? "unknown",
+      amount_cents: amountCents,
+      currency: session.currency ?? "usd",
+      environment: env,
+      grants_lifetime_access: grantsLifetime,
+    },
+    { onConflict: "stripe_session_id" },
+  );
+}
+
 
 async function handleSubscriptionUpdated(subscription: any, env: StripeEnv) {
   const item = subscription.items?.data?.[0];
@@ -90,9 +158,13 @@ async function handleWebhook(req: Request, env: StripeEnv) {
     case "customer.subscription.deleted":
       await handleSubscriptionDeleted(event.data.object, env);
       break;
+    case "checkout.session.completed":
+      await handleCheckoutCompleted(event.data.object, env);
+      break;
     default:
       console.log("Unhandled event:", event.type);
   }
+
 }
 
 export const Route = createFileRoute("/api/public/payments/webhook")({
