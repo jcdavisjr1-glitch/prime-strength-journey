@@ -541,28 +541,6 @@ function Couples() {
           friendly competition that ends in both of you winning.
         </p>
 
-        <div className="mt-12 grid md:grid-cols-2 gap-4 md:gap-6">
-          <div className="aspect-[4/5] overflow-hidden rounded-lg border border-border">
-            <img
-              src={workoutTogether1}
-              alt="Couple walking together on a trail"
-              loading="lazy"
-              width={1024}
-              height={1280}
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-            />
-          </div>
-          <div className="aspect-[4/5] overflow-hidden rounded-lg border border-border">
-            <img
-              src={workoutTogether2}
-              alt="Couple working out together outdoors"
-              loading="lazy"
-              width={1024}
-              height={1280}
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-            />
-          </div>
-        </div>
 
         <div className="mt-12 grid md:grid-cols-3 gap-4 md:gap-6">
           {[
