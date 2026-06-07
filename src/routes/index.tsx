@@ -151,16 +151,6 @@ function Hero() {
             </CtaButton>
           </div>
         </div>
-        <div className="relative">
-          <div className="absolute -inset-4 bg-primary/20 blur-3xl rounded-full" />
-          <img
-            src={hero}
-            alt="Strong man in his 50s mid-lift"
-            width={1600}
-            height={1024}
-            className="relative rounded-lg border border-border w-full h-auto object-cover aspect-[4/3]"
-          />
-        </div>
       </div>
     </section>
   );
