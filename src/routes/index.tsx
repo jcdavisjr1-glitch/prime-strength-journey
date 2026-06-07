@@ -1,12 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import hero from "@/assets/hero.jpg";
-import couple1 from "@/assets/couple-1.jpg";
-import couple2 from "@/assets/couple-2.jpg";
-import couple3 from "@/assets/couple-3.jpg";
-import couple4 from "@/assets/couple-4.jpg";
-import couple5 from "@/assets/couple-5.jpg";
-import couple6 from "@/assets/couple-6.jpg";
+import workoutTogether1 from "@/assets/workout-together-1.jpg";
+import workoutTogether2 from "@/assets/workout-together-2.jpg";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
