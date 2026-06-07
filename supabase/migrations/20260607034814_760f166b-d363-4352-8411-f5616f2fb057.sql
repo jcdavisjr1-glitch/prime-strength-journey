@@ -1,0 +1,52 @@
+-- Restrict execute on access-check functions; require caller = subject user
+REVOKE EXECUTE ON FUNCTION public.has_active_subscription(uuid, text) FROM PUBLIC, anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.has_member_access(uuid, text) FROM PUBLIC, anon, authenticated;
+
+CREATE OR REPLACE FUNCTION public.has_active_subscription(user_uuid uuid, check_env text DEFAULT 'live')
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT
+    auth.uid() = user_uuid
+    AND EXISTS (
+      SELECT 1 FROM public.subscriptions
+      WHERE user_id = user_uuid
+        AND environment = check_env
+        AND (
+          (status IN ('active', 'trialing') AND (current_period_end IS NULL OR current_period_end > now()))
+          OR (status = 'canceled' AND current_period_end > now())
+        )
+    );
+$$;
+
+CREATE OR REPLACE FUNCTION public.has_member_access(user_uuid uuid, check_env text DEFAULT 'live')
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT
+    auth.uid() = user_uuid
+    AND (
+      EXISTS (
+        SELECT 1 FROM public.subscriptions
+        WHERE user_id = user_uuid
+          AND environment = check_env
+          AND (
+            (status IN ('active', 'trialing') AND (current_period_end IS NULL OR current_period_end > now()))
+            OR (status = 'canceled' AND current_period_end > now())
+          )
+      )
+      OR EXISTS (
+        SELECT 1 FROM public.one_time_purchases
+        WHERE user_id = user_uuid
+          AND environment = check_env
+          AND grants_lifetime_access = true
+      )
+    );
+$$;
+
+GRANT EXECUTE ON FUNCTION public.has_active_subscription(uuid, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.has_member_access(uuid, text) TO authenticated;
