@@ -74,16 +74,18 @@ async function handleCheckoutCompleted(session: any, env: StripeEnv) {
     return;
   }
 
-  // Retrieve line items to get price/product info
-  const lineItem = session.line_items?.data?.[0] ?? null;
+  // Retrieve line items from Stripe (not included in webhook payload by default)
+  const stripe = createStripeClient(env);
+  const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 1, expand: ["data.price"] });
+  const lineItem = lineItems.data[0];
   let priceId: string | undefined;
   let productId: string | undefined;
-  let amountCents = session.amount_total ?? 0;
+  const amountCents = session.amount_total ?? 0;
 
   if (lineItem?.price) {
     priceId =
       lineItem.price.lookup_key ||
-      lineItem.price.metadata?.lovable_external_id ||
+      (lineItem.price.metadata as any)?.lovable_external_id ||
       lineItem.price.id;
     productId = typeof lineItem.price.product === "string"
       ? lineItem.price.product
@@ -92,6 +94,7 @@ async function handleCheckoutCompleted(session: any, env: StripeEnv) {
 
   // Single Plan grants lifetime access
   const grantsLifetime = priceId === "single_plan";
+
 
   await getSupabase().from("one_time_purchases").upsert(
     {
