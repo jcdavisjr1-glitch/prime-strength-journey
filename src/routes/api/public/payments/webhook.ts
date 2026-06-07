@@ -13,6 +13,22 @@ function getSupabase() {
   return _supabase;
 }
 
+async function addToMailingList(userId: string | undefined, email: string | undefined, source: string) {
+  if (!email) return;
+  await getSupabase()
+    .from("mailing_list")
+    .upsert(
+      {
+        user_id: userId ?? null,
+        email,
+        source,
+        subscribed: true,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "email" },
+    );
+}
+
 async function handleSubscriptionCreated(subscription: any, env: StripeEnv) {
   const userId = subscription.metadata?.userId;
   if (!userId) {
@@ -43,7 +59,56 @@ async function handleSubscriptionCreated(subscription: any, env: StripeEnv) {
     },
     { onConflict: "stripe_subscription_id" },
   );
+
+  // Add subscriber to members-only mailing list
+  const { data: userData } = await getSupabase().auth.admin.getUserById(userId);
+  await addToMailingList(userId, userData?.user?.email, "subscription");
 }
+
+async function handleCheckoutCompleted(session: any, env: StripeEnv) {
+  // Only process one-time payments here; subscriptions are handled by subscription.created
+  if (session.mode !== "payment") return;
+  const userId = session.metadata?.userId;
+  if (!userId) {
+    console.error("No userId in checkout session metadata");
+    return;
+  }
+
+  // Retrieve line items to get price/product info
+  const lineItem = session.line_items?.data?.[0] ?? null;
+  let priceId: string | undefined;
+  let productId: string | undefined;
+  let amountCents = session.amount_total ?? 0;
+
+  if (lineItem?.price) {
+    priceId =
+      lineItem.price.lookup_key ||
+      lineItem.price.metadata?.lovable_external_id ||
+      lineItem.price.id;
+    productId = typeof lineItem.price.product === "string"
+      ? lineItem.price.product
+      : lineItem.price.product?.id;
+  }
+
+  // Single Plan grants lifetime access
+  const grantsLifetime = priceId === "single_plan";
+
+  await getSupabase().from("one_time_purchases").upsert(
+    {
+      user_id: userId,
+      stripe_session_id: session.id,
+      stripe_customer_id: session.customer,
+      product_id: productId ?? "unknown",
+      price_id: priceId ?? "unknown",
+      amount_cents: amountCents,
+      currency: session.currency ?? "usd",
+      environment: env,
+      grants_lifetime_access: grantsLifetime,
+    },
+    { onConflict: "stripe_session_id" },
+  );
+}
+
 
 async function handleSubscriptionUpdated(subscription: any, env: StripeEnv) {
   const item = subscription.items?.data?.[0];
