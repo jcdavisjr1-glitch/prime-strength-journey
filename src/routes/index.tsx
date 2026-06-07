@@ -598,12 +598,27 @@ function Couples() {
           <p className="mt-3 text-muted-foreground">
             Two full memberships. Linked dashboards. Cancel anytime.
           </p>
-          <CtaButton className="mt-6 w-full">Start As A Couple</CtaButton>
+          <button
+            onClick={handleBuy}
+            className="mt-6 w-full inline-flex items-center justify-center font-display tracking-wider uppercase text-base px-6 py-3 rounded-sm bg-primary text-primary-foreground hover:bg-primary-glow shadow-[var(--shadow-red)] transition-all"
+          >
+            Start As A Couple
+          </button>
         </div>
       </div>
+
+      <Dialog open={isOpen} onOpenChange={(v) => !v && closeCheckout()}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 bg-background">
+          <DialogHeader className="px-6 pt-6">
+            <DialogTitle className="font-display uppercase tracking-wider">Checkout</DialogTitle>
+          </DialogHeader>
+          <div className="p-4">{checkoutElement}</div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
+
 
 function Cancellation() {
   const items = [
