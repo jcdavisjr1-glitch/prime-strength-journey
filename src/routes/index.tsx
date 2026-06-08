@@ -180,14 +180,6 @@ function Stats() {
 function Truth() {
   const scenes = [
     {
-      t: "Can't lift the groceries",
-      d: "You set the bag down twice on the way in. You used to carry four. Nothing happened on a day you remember.",
-    },
-    {
-      t: "Missing the moments",
-      d: "You skipped the rollercoaster with your kid. Said your knee. Said the line. Said anything but the truth.",
-    },
-    {
       t: "Trading health for prescriptions",
       d: "The pillbox has more compartments every year. You wonder which of these you actually need.",
     },
