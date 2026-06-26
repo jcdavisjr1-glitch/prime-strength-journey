@@ -123,7 +123,7 @@ export const linkCheckoutToUser = createServerFn({ method: "POST" })
             amount_cents: session.amount_total ?? 0,
             currency: session.currency ?? "usd",
             environment: data.environment,
-            grants_lifetime_access: priceId === "single_plan",
+            grants_lifetime_access: priceId === "single_onetime",
           },
           { onConflict: "stripe_session_id" },
         );

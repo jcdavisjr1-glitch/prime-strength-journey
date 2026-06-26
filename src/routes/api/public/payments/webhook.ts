@@ -93,7 +93,7 @@ async function handleCheckoutCompleted(session: any, env: StripeEnv) {
   }
 
   // Single Plan grants lifetime access
-  const grantsLifetime = priceId === "single_plan";
+  const grantsLifetime = priceId === "single_onetime";
 
 
   await getSupabase().from("one_time_purchases").upsert(
