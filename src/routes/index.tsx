@@ -688,8 +688,8 @@ function Footer() {
     <footer className="border-t border-border py-12">
       <div className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
         <div>
-          <div className="font-display text-2xl tracking-wider">
-            FORTY<span className="text-primary">STRONG</span>
+          <div className="flex items-center">
+            <img src="/logo.png" alt="FortyStrong" className="h-11 w-auto object-contain" />
           </div>
           <div className="mt-2 text-sm text-muted-foreground">Reignite your prime. © FortyStrong.</div>
         </div>
