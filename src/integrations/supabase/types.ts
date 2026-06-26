@@ -86,6 +86,42 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          created_at: string
+          equipment_type: string | null
+          fitness_level: string | null
+          full_name: string | null
+          goal: string | null
+          id: string
+          onboarding_completed: boolean
+          partner_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          equipment_type?: string | null
+          fitness_level?: string | null
+          full_name?: string | null
+          goal?: string | null
+          id: string
+          onboarding_completed?: boolean
+          partner_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          equipment_type?: string | null
+          fitness_level?: string | null
+          full_name?: string | null
+          goal?: string | null
+          id?: string
+          onboarding_completed?: boolean
+          partner_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           cancel_at_period_end: boolean | null
