@@ -30,8 +30,8 @@ function DashboardLayout() {
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <header className="border-b border-border">
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 md:h-20 flex items-center justify-between">
-          <Link to="/" className="font-display text-2xl tracking-wider">
-            FORTY<span className="text-primary">STRONG</span>
+          <Link to="/" className="flex items-center">
+            <img src="/logo.png" alt="FortyStrong" className="h-11 w-auto object-contain" />
           </Link>
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((n) => {
