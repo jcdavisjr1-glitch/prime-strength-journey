@@ -112,9 +112,10 @@ function LoginPage() {
 
         <p className="mt-8 text-center text-sm text-muted-foreground">
           New here?{" "}
-          <Link to="/signup" className="text-primary hover:underline font-display tracking-wider uppercase">
-            Create account
-          </Link>
+          <Link to="/" className="text-primary hover:underline font-display tracking-wider uppercase">
+            Choose a plan
+          </Link>{" "}
+          to get started — accounts are created at checkout.
         </p>
       </div>
     </main>
