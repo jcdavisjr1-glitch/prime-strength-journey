@@ -178,7 +178,7 @@ function ExerciseCard({
               {exercise.sets} sets
             </span>
             <span className="px-2 py-1 bg-background rounded border border-border">
-              {exercise.reps} reps
+              {exercise.reps}
             </span>
             <span className="px-2 py-1 bg-background rounded border border-border">
               {exercise.rest}s rest
