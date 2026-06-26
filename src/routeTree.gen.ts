@@ -13,6 +13,10 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as DashboardProgressRouteImport } from './routes/dashboard.progress'
+import { Route as DashboardPlanRouteImport } from './routes/dashboard.plan'
+import { Route as DashboardAccountRouteImport } from './routes/dashboard.account'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
@@ -36,6 +40,26 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardProgressRoute = DashboardProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardPlanRoute = DashboardPlanRouteImport.update({
+  id: '/plan',
+  path: '/plan',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAccountRoute = DashboardAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   id: '/checkout/return',
   path: '/checkout/return',
@@ -50,27 +74,38 @@ const ApiPublicPaymentsWebhookRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/dashboard/account': typeof DashboardAccountRoute
+  '/dashboard/plan': typeof DashboardPlanRoute
+  '/dashboard/progress': typeof DashboardProgressRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/dashboard/account': typeof DashboardAccountRoute
+  '/dashboard/plan': typeof DashboardPlanRoute
+  '/dashboard/progress': typeof DashboardProgressRoute
+  '/dashboard': typeof DashboardIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/dashboard/account': typeof DashboardAccountRoute
+  '/dashboard/plan': typeof DashboardPlanRoute
+  '/dashboard/progress': typeof DashboardProgressRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
@@ -81,14 +116,21 @@ export interface FileRouteTypes {
     | '/login'
     | '/onboarding'
     | '/checkout/return'
+    | '/dashboard/account'
+    | '/dashboard/plan'
+    | '/dashboard/progress'
+    | '/dashboard/'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/dashboard'
     | '/login'
     | '/onboarding'
     | '/checkout/return'
+    | '/dashboard/account'
+    | '/dashboard/plan'
+    | '/dashboard/progress'
+    | '/dashboard'
     | '/api/public/payments/webhook'
   id:
     | '__root__'
@@ -97,12 +139,16 @@ export interface FileRouteTypes {
     | '/login'
     | '/onboarding'
     | '/checkout/return'
+    | '/dashboard/account'
+    | '/dashboard/plan'
+    | '/dashboard/progress'
+    | '/dashboard/'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
@@ -139,6 +185,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/progress': {
+      id: '/dashboard/progress'
+      path: '/progress'
+      fullPath: '/dashboard/progress'
+      preLoaderRoute: typeof DashboardProgressRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/plan': {
+      id: '/dashboard/plan'
+      path: '/plan'
+      fullPath: '/dashboard/plan'
+      preLoaderRoute: typeof DashboardPlanRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/account': {
+      id: '/dashboard/account'
+      path: '/account'
+      fullPath: '/dashboard/account'
+      preLoaderRoute: typeof DashboardAccountRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/checkout/return': {
       id: '/checkout/return'
       path: '/checkout/return'
@@ -156,9 +230,27 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface DashboardRouteChildren {
+  DashboardAccountRoute: typeof DashboardAccountRoute
+  DashboardPlanRoute: typeof DashboardPlanRoute
+  DashboardProgressRoute: typeof DashboardProgressRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAccountRoute: DashboardAccountRoute,
+  DashboardPlanRoute: DashboardPlanRoute,
+  DashboardProgressRoute: DashboardProgressRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardRoute: DashboardRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
