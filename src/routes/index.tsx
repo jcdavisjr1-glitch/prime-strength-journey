@@ -689,7 +689,7 @@ function Footer() {
       <div className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
         <div>
           <div className="flex items-center">
-            <img src="/logo.png" alt="FortyStrong" className="h-11 w-auto object-contain" />
+            <img src="/logo.png" alt="FortyStrong" className="h-14 md:h-16 w-auto object-contain" />
           </div>
           <div className="mt-2 text-sm text-muted-foreground">Reignite your prime. © FortyStrong.</div>
         </div>
