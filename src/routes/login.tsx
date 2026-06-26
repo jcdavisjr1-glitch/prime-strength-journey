@@ -47,8 +47,8 @@ function LoginPage() {
   return (
     <main className="min-h-screen bg-background text-foreground flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-md">
-        <Link to="/" className="block text-center">
-          <img src="/logo.png" alt="FortyStrong" className="h-11 w-auto object-contain mx-auto" />
+        <Link to="/" className="block text-center transition-[filter] duration-300 hover:drop-shadow-[0_0_14px_rgba(192,57,43,0.6)]">
+          <img src="/logo.png" alt="FortyStrong" className="h-14 md:h-16 w-auto object-contain mx-auto" />
         </Link>
         <h1 className="mt-8 font-display uppercase text-4xl md:text-5xl text-center">
           Welcome <span className="text-primary">back</span>

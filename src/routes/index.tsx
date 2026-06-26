@@ -77,8 +77,8 @@ function Nav() {
   return (
     <header className="fixed top-0 inset-x-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/60">
       <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 md:h-20 flex items-center justify-between">
-        <Link to="/" className="flex items-center">
-          <img src="/logo.png" alt="FortyStrong" className="h-11 w-auto object-contain" />
+        <Link to="/" className="flex items-center transition-[filter] duration-300 hover:drop-shadow-[0_0_14px_rgba(192,57,43,0.6)]">
+          <img src="/logo.png" alt="FortyStrong" className="h-14 md:h-16 w-auto object-contain" />
         </Link>
         <nav className="hidden md:flex items-center gap-8">
           {links.map((l) => (
@@ -689,7 +689,7 @@ function Footer() {
       <div className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
         <div>
           <div className="flex items-center">
-            <img src="/logo.png" alt="FortyStrong" className="h-11 w-auto object-contain" />
+            <img src="/logo.png" alt="FortyStrong" className="h-14 md:h-16 w-auto object-contain" />
           </div>
           <div className="mt-2 text-sm text-muted-foreground">Reignite your prime. © FortyStrong.</div>
         </div>
