@@ -17,6 +17,14 @@ const navItems = [
 
 function DashboardLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.invalidate();
+    navigate({ to: "/" });
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
