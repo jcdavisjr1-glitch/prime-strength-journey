@@ -22,6 +22,7 @@ function CheckoutReturn() {
   const linkPurchase = useServerFn(linkCheckoutToUser);
 
   const [stripeEmail, setStripeEmail] = useState<string | null>(null);
+  const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -52,12 +53,14 @@ function CheckoutReturn() {
     e.preventDefault();
     setError(null);
     if (!stripeEmail) return setError("We couldn't find your email. Refresh and try again.");
+    if (!fullName.trim()) return setError("Please tell us what to call you.");
     if (password.length < 8) return setError("Password must be at least 8 characters.");
 
     setSubmitting(true);
     const { error: signUpError } = await supabase.auth.signUp({
       email: stripeEmail,
       password,
+      options: { data: { full_name: fullName.trim() } },
     });
     if (signUpError) {
       setSubmitting(false);
@@ -130,6 +133,20 @@ function CheckoutReturn() {
                 value={stripeEmail ?? ""}
                 readOnly
                 className="mt-2 w-full bg-background border border-border rounded-sm px-4 py-3 text-muted-foreground cursor-not-allowed"
+              />
+            </label>
+
+            <label className="block mt-4">
+              <span className="font-display tracking-widest uppercase text-xs text-muted-foreground">
+                What should we call you?
+              </span>
+              <input
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                autoComplete="name"
+                placeholder="Your name"
+                className="mt-2 w-full bg-background border border-border focus:border-primary outline-none rounded-sm px-4 py-3 text-foreground transition-colors"
               />
             </label>
 
