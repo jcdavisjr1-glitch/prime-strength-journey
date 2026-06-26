@@ -51,6 +51,14 @@ function DashboardLayout() {
               );
             })}
           </nav>
+          <button
+            onClick={handleSignOut}
+            className="hidden md:flex items-center gap-2 px-4 py-2 rounded-sm font-display tracking-widest uppercase text-xs text-muted-foreground hover:text-primary transition-colors"
+            aria-label="Sign out"
+          >
+            <LogOut className="h-4 w-4" />
+            <span>Sign out</span>
+          </button>
         </div>
       </header>
 
