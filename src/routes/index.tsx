@@ -438,6 +438,23 @@ function Pricing() {
           ))}
         </div>
 
+        <div className="mt-8 p-5 bg-background border border-border rounded-md flex items-start sm:items-center gap-3">
+          <span className="text-primary mt-0.5" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </span>
+          <p className="text-muted-foreground">
+            Going through this with your partner? FortyStrong Couples gets you both a personalized plan, individual dashboards, and a better price — together.{" "}
+            <a href="#couples" className="text-primary hover:underline font-medium">
+              See Couples pricing →
+            </a>
+          </p>
+        </div>
+
         <div className="mt-10 p-5 bg-background border-l-4 border-primary rounded-md flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <div className="font-display text-2xl tracking-wider uppercase text-primary">30-Day Guarantee</div>
           <p className="text-muted-foreground">
