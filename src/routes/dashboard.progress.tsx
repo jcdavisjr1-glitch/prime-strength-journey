@@ -161,22 +161,22 @@ function ProgressPage() {
           ) : (
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                <CartesianGrid stroke="hsl(var(--border))" strokeDasharray="3 3" />
-                <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />
+                <XAxis dataKey="date" stroke="var(--muted-foreground)" fontSize={12} />
+                <YAxis stroke="var(--muted-foreground)" fontSize={12} />
                 <Tooltip
                   contentStyle={{
-                    background: "hsl(var(--background))",
-                    border: "1px solid hsl(var(--border))",
-                    color: "hsl(var(--foreground))",
+                    background: "var(--background)",
+                    border: "1px solid var(--border)",
+                    color: "var(--foreground)",
                   }}
                 />
                 <Line
                   type="monotone"
                   dataKey="weight"
-                  stroke="hsl(var(--primary))"
+                  stroke="var(--primary)"
                   strokeWidth={3}
-                  dot={{ fill: "hsl(var(--primary))", r: 4 }}
+                  dot={{ fill: "var(--primary)", r: 4 }}
                 />
               </LineChart>
             </ResponsiveContainer>
