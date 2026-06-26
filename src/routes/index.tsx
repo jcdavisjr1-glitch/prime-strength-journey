@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -63,6 +64,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 function Nav() {
   const [open, setOpen] = useState(false);
+  const { user } = useSupabaseSession();
   const links = [
     { href: "#truth", label: "Truth" },
     { href: "#how", label: "How It Works" },
@@ -70,6 +72,8 @@ function Nav() {
     { href: "#couples", label: "Couples" },
     { href: "#faq", label: "FAQ" },
   ];
+  const ctaClass =
+    "inline-flex items-center justify-center font-display tracking-wider uppercase rounded-sm transition-all duration-200 bg-primary text-primary-foreground hover:bg-primary-glow shadow-[var(--shadow-red)] hover:-translate-y-0.5";
   return (
     <header className="fixed top-0 inset-x-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/60">
       <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 md:h-20 flex items-center justify-between">
@@ -88,9 +92,26 @@ function Nav() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <CtaButton href="#pricing" className="hidden sm:inline-flex !px-5 !py-2.5 !text-sm">
-            Get My Free Plan
-          </CtaButton>
+          {user ? (
+            <Link
+              to="/dashboard"
+              className={`${ctaClass} hidden sm:inline-flex px-5 py-2.5 text-sm`}
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="hidden md:inline-flex font-display tracking-widest text-sm uppercase text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Log in
+              </Link>
+              <CtaButton href="#pricing" className="hidden sm:inline-flex !px-5 !py-2.5 !text-sm">
+                Get My Free Plan
+              </CtaButton>
+            </>
+          )}
           <button
             onClick={() => setOpen((o) => !o)}
             className="md:hidden p-2 text-foreground"
@@ -115,9 +136,28 @@ function Nav() {
                 {l.label}
               </a>
             ))}
-            <CtaButton href="#pricing" className="sm:hidden">
-              Get My Free Plan
-            </CtaButton>
+            {user ? (
+              <Link
+                to="/dashboard"
+                onClick={() => setOpen(false)}
+                className={`${ctaClass} px-6 py-3 text-base`}
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  onClick={() => setOpen(false)}
+                  className="font-display tracking-widest uppercase text-muted-foreground"
+                >
+                  Log in
+                </Link>
+                <CtaButton href="#pricing" className="sm:hidden">
+                  Get My Free Plan
+                </CtaButton>
+              </>
+            )}
           </nav>
         </div>
       )}
