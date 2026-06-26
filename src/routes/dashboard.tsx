@@ -1,5 +1,6 @@
-import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Dumbbell, LineChart, User } from "lucide-react";
+import { createFileRoute, Link, Outlet, useNavigate, useRouter, useRouterState } from "@tanstack/react-router";
+import { LayoutDashboard, Dumbbell, LineChart, LogOut, User } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/dashboard")({
   ssr: false,
@@ -16,6 +17,14 @@ const navItems = [
 
 function DashboardLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.invalidate();
+    navigate({ to: "/" });
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -42,6 +51,14 @@ function DashboardLayout() {
               );
             })}
           </nav>
+          <button
+            onClick={handleSignOut}
+            className="hidden md:flex items-center gap-2 px-4 py-2 rounded-sm font-display tracking-widest uppercase text-xs text-muted-foreground hover:text-primary transition-colors"
+            aria-label="Sign out"
+          >
+            <LogOut className="h-4 w-4" />
+            <span>Sign out</span>
+          </button>
         </div>
       </header>
 
