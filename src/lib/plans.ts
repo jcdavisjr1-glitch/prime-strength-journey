@@ -1,7 +1,7 @@
 export interface Exercise {
   name: string;
   sets: number;
-  reps: string;
+  reps: string | number;
   rest: number;
   note: string;
 }
