@@ -170,6 +170,36 @@ export type Database = {
         }
         Relationships: []
       }
+      workout_logs: {
+        Row: {
+          exercise_name: string
+          id: string
+          logged_at: string
+          reps: number | null
+          sets: number | null
+          user_id: string
+          weight: number | null
+        }
+        Insert: {
+          exercise_name: string
+          id?: string
+          logged_at?: string
+          reps?: number | null
+          sets?: number | null
+          user_id: string
+          weight?: number | null
+        }
+        Update: {
+          exercise_name?: string
+          id?: string
+          logged_at?: string
+          reps?: number | null
+          sets?: number | null
+          user_id?: string
+          weight?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
