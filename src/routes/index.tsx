@@ -77,9 +77,9 @@ function Nav() {
   return (
     <header className="fixed top-0 inset-x-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/60">
       <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 md:h-20 flex items-center justify-between">
-        <a href="#" className="font-display text-2xl md:text-3xl tracking-wider">
-          FORTY<span className="text-primary">STRONG</span>
-        </a>
+        <Link to="/" className="flex items-center">
+          <img src="/logo.png" alt="FortyStrong" className="h-11 w-auto object-contain" />
+        </Link>
         <nav className="hidden md:flex items-center gap-8">
           {links.map((l) => (
             <a
