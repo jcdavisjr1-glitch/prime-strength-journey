@@ -3,8 +3,12 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { getMyProfileAndAccess } from "@/lib/profile.functions";
+import {
+  getLatestLogsByExercise,
+  logWorkout,
+} from "@/lib/workout-logs.functions";
 import { plans, type Exercise } from "@/lib/plans";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, X } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/plan")({
   ssr: false,
@@ -13,15 +17,20 @@ export const Route = createFileRoute("/dashboard/plan")({
 });
 
 type Data = Awaited<ReturnType<typeof getMyProfileAndAccess>>;
+type LatestLogs = Awaited<ReturnType<typeof getLatestLogsByExercise>>;
 
 function MyPlan() {
   const navigate = useNavigate();
   const { user, loading } = useSupabaseSession();
   const fetchData = useServerFn(getMyProfileAndAccess);
+  const fetchLatest = useServerFn(getLatestLogsByExercise);
+  const submitLog = useServerFn(logWorkout);
   const [data, setData] = useState<Data | null>(null);
+  const [latest, setLatest] = useState<LatestLogs>({});
   const [fetched, setFetched] = useState(false);
   const [activeDay, setActiveDay] = useState<"day1" | "day2">("day1");
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
+  const [logging, setLogging] = useState<Exercise | null>(null);
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
@@ -38,27 +47,29 @@ function MyPlan() {
         }
       })
       .catch(() => setFetched(true));
-  }, [user, fetchData, navigate]);
+    fetchLatest({})
+      .then(setLatest)
+      .catch(() => {});
+  }, [user, fetchData, fetchLatest, navigate]);
 
-  if (loading || !user || !fetched) {
-    return <LoadingState />;
-  }
+  const refreshLatest = () => {
+    fetchLatest({})
+      .then(setLatest)
+      .catch(() => {});
+  };
 
-  if (!data?.hasAccess) {
-    return <NoPlanState />;
-  }
+  if (loading || !user || !fetched) return <LoadingState />;
+  if (!data?.hasAccess) return <NoPlanState />;
 
   const level = data.profile?.fitness_level ?? "beginner";
   const equipment = data.profile?.equipment_type ?? "gym";
-
   const validLevels = ["beginner", "intermediate", "advanced"] as const;
   const validEquipment = ["gym", "home", "bodyweight"] as const;
-
   const safeLevel = validLevels.includes(level as (typeof validLevels)[number])
     ? (level as keyof typeof plans)
     : "beginner";
   const safeEquipment = validEquipment.includes(
-    equipment as (typeof validEquipment)[number]
+    equipment as (typeof validEquipment)[number],
   )
     ? (equipment as "gym" | "home" | "bodyweight")
     : "gym";
@@ -66,9 +77,8 @@ function MyPlan() {
   const plan = plans[safeLevel][safeEquipment];
   const day = plan[activeDay];
 
-  const toggleExercise = (name: string) => {
-    setCompleted((prev) => ({ ...prev, [name]: !prev[name] }));
-  };
+  const toggleExercise = (name: string) =>
+    setCompleted((p) => ({ ...p, [name]: !p[name] }));
 
   const completedCount = day.exercises.filter((ex) => completed[ex.name]).length;
   const progress = Math.round((completedCount / day.exercises.length) * 100);
@@ -78,9 +88,7 @@ function MyPlan() {
       <div className="font-display uppercase tracking-[0.3em] text-primary text-sm">
         My Plan
       </div>
-      <h1 className="mt-4 font-display uppercase text-4xl md:text-6xl">
-        {day.name}
-      </h1>
+      <h1 className="mt-4 font-display uppercase text-4xl md:text-6xl">{day.name}</h1>
       <p className="mt-2 text-muted-foreground">{day.focus}</p>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -93,44 +101,51 @@ function MyPlan() {
       </div>
 
       <div className="mt-8 grid grid-cols-2 gap-3">
-        <button
-          onClick={() => setActiveDay("day1")}
-          className={`py-3 px-4 text-center font-display uppercase tracking-widest text-sm border transition-all ${
-            activeDay === "day1"
-              ? "bg-primary text-primary-foreground border-primary"
-              : "bg-surface text-muted-foreground border-border hover:text-foreground"
-          }`}
-        >
-          Day A
-        </button>
-        <button
-          onClick={() => setActiveDay("day2")}
-          className={`py-3 px-4 text-center font-display uppercase tracking-widest text-sm border transition-all ${
-            activeDay === "day2"
-              ? "bg-primary text-primary-foreground border-primary"
-              : "bg-surface text-muted-foreground border-border hover:text-foreground"
-          }`}
-        >
-          Day B
-        </button>
+        {(["day1", "day2"] as const).map((d) => (
+          <button
+            key={d}
+            onClick={() => setActiveDay(d)}
+            className={`py-3 px-4 text-center font-display uppercase tracking-widest text-sm border transition-all ${
+              activeDay === d
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-surface text-muted-foreground border-border hover:text-foreground"
+            }`}
+          >
+            {d === "day1" ? "Day A" : "Day B"}
+          </button>
+        ))}
       </div>
 
       <div className="mt-10 space-y-4">
-        {day.exercises.map((exercise: Exercise, index: number) => (
+        {day.exercises.map((exercise, index) => (
           <ExerciseCard
             key={exercise.name + index}
             exercise={exercise}
             index={index}
             completed={!!completed[exercise.name]}
+            lastLog={latest[exercise.name]}
             onToggle={() => toggleExercise(exercise.name)}
+            onLog={() => setLogging(exercise)}
           />
         ))}
       </div>
 
       <p className="mt-8 text-sm text-muted-foreground">
-        Alternate Day A and Day B with at least one rest day between lifting
-        sessions. Outside lifting days, walk 20–30 minutes.
+        Alternate Day A and Day B with at least one rest day between lifting sessions.
+        Outside lifting days, walk 20–30 minutes.
       </p>
+
+      {logging && (
+        <LogModal
+          exercise={logging}
+          onClose={() => setLogging(null)}
+          onSave={async (payload) => {
+            await submitLog({ data: { exercise_name: logging.name, ...payload } });
+            setLogging(null);
+            refreshLatest();
+          }}
+        />
+      )}
     </section>
   );
 }
@@ -139,55 +154,173 @@ function ExerciseCard({
   exercise,
   index,
   completed,
+  lastLog,
   onToggle,
+  onLog,
 }: {
   exercise: Exercise;
   index: number;
   completed: boolean;
+  lastLog?: { weight: number | null; sets: number | null; reps: number | null };
   onToggle: () => void;
+  onLog: () => void;
 }) {
   return (
     <div
-      onClick={onToggle}
-      className={`group flex items-start gap-4 p-4 md:p-5 rounded-lg border cursor-pointer transition-all ${
-        completed
-          ? "bg-primary/5 border-primary/30"
-          : "bg-surface border-border hover:border-primary/40"
+      className={`group p-4 md:p-5 rounded-lg border transition-all ${
+        completed ? "bg-primary/5 border-primary/30" : "bg-surface border-border"
       }`}
     >
-      <div
-        className={`mt-0.5 h-6 w-6 rounded-full border-2 flex items-center justify-center transition-colors ${
-          completed
-            ? "bg-primary border-primary text-primary-foreground"
-            : "border-muted-foreground group-hover:border-primary"
-        }`}
-      >
-        {completed && <CheckCircle2 className="h-4 w-4" />}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-1">
-          <h3
-            className={`font-display uppercase text-lg ${
-              completed ? "text-muted-foreground line-through" : "text-foreground"
-            }`}
-          >
-            {index + 1}. {exercise.name}
-          </h3>
-          <div className="flex items-center gap-3 font-display uppercase text-xs tracking-wider text-muted-foreground">
-            <span className="px-2 py-1 bg-background rounded border border-border">
-              {exercise.sets} sets
-            </span>
-            <span className="px-2 py-1 bg-background rounded border border-border">
-              {exercise.reps}
-            </span>
-            <span className="px-2 py-1 bg-background rounded border border-border">
-              {exercise.rest}s rest
-            </span>
+      <div className="flex items-start gap-4">
+        <button
+          onClick={onToggle}
+          aria-label="Mark complete"
+          className={`mt-0.5 h-6 w-6 shrink-0 rounded-full border-2 flex items-center justify-center transition-colors ${
+            completed
+              ? "bg-primary border-primary text-primary-foreground"
+              : "border-muted-foreground hover:border-primary"
+          }`}
+        >
+          {completed && <CheckCircle2 className="h-4 w-4" />}
+        </button>
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-1">
+            <h3
+              className={`font-display uppercase text-lg ${
+                completed ? "text-muted-foreground line-through" : "text-foreground"
+              }`}
+            >
+              {index + 1}. {exercise.name}
+            </h3>
+            <div className="flex flex-wrap items-center gap-2 font-display uppercase text-xs tracking-wider text-muted-foreground">
+              <span className="px-2 py-1 bg-background rounded border border-border">
+                {exercise.sets} sets
+              </span>
+              <span className="px-2 py-1 bg-background rounded border border-border">
+                {exercise.reps}
+              </span>
+              <span className="px-2 py-1 bg-background rounded border border-border">
+                {exercise.rest}s rest
+              </span>
+            </div>
+          </div>
+          <p className="mt-2 text-sm text-muted-foreground">{exercise.note}</p>
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+            <div className="text-xs font-display uppercase tracking-widest text-muted-foreground">
+              {lastLog && lastLog.weight != null
+                ? <>Last time: <span className="text-foreground">{lastLog.weight} lbs</span></>
+                : <span className="opacity-60">No history yet</span>}
+            </div>
+            <button
+              onClick={onLog}
+              className="px-3 py-1.5 text-xs font-display uppercase tracking-widest border border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground transition-colors rounded"
+            >
+              Log this
+            </button>
           </div>
         </div>
-        <p className="mt-2 text-sm text-muted-foreground">{exercise.note}</p>
       </div>
     </div>
+  );
+}
+
+function LogModal({
+  exercise,
+  onClose,
+  onSave,
+}: {
+  exercise: Exercise;
+  onClose: () => void;
+  onSave: (payload: { weight: number | null; sets: number | null; reps: number | null }) => Promise<void>;
+}) {
+  const [weight, setWeight] = useState("");
+  const [sets, setSets] = useState(String(exercise.sets));
+  const [reps, setReps] = useState(
+    typeof exercise.reps === "number" ? String(exercise.reps) : "",
+  );
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setErr(null);
+    try {
+      await onSave({
+        weight: weight ? Number(weight) : null,
+        sets: sets ? parseInt(sets, 10) : null,
+        reps: reps ? parseInt(reps, 10) : null,
+      });
+    } catch (e) {
+      setErr((e as Error).message);
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={onClose}>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md bg-surface border border-border rounded-lg p-6 relative"
+      >
+        <button
+          onClick={onClose}
+          aria-label="Close"
+          className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
+        >
+          <X className="h-5 w-5" />
+        </button>
+        <div className="font-display uppercase tracking-[0.3em] text-primary text-xs">Log set</div>
+        <h2 className="mt-2 font-display uppercase text-2xl">{exercise.name}</h2>
+        <form onSubmit={submit} className="mt-6 space-y-4">
+          <Field label="Weight (lbs)" value={weight} onChange={setWeight} type="number" step="0.5" placeholder="e.g. 95" />
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Sets completed" value={sets} onChange={setSets} type="number" />
+            <Field label="Reps completed" value={reps} onChange={setReps} type="number" />
+          </div>
+          {err && <p className="text-sm text-primary">{err}</p>}
+          <button
+            type="submit"
+            disabled={saving}
+            className="w-full py-3 font-display uppercase tracking-widest text-sm bg-primary text-primary-foreground hover:bg-primary-glow rounded disabled:opacity-50"
+          >
+            {saving ? "Saving…" : "Save log"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function Field({
+  label,
+  value,
+  onChange,
+  type = "text",
+  step,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+  step?: string;
+  placeholder?: string;
+}) {
+  return (
+    <label className="block">
+      <span className="block font-display uppercase tracking-widest text-[10px] text-muted-foreground mb-1">
+        {label}
+      </span>
+      <input
+        type={type}
+        step={step}
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full bg-background border border-border rounded px-3 py-2 text-foreground focus:border-primary outline-none"
+      />
+    </label>
   );
 }
 
