@@ -293,17 +293,17 @@ function Science() {
         <img
           src="/science.jpg"
           alt="Man in a home gym with a power rack and dumbbells"
-          className="absolute right-0 top-0 h-full w-1/2 md:w-3/5 object-cover object-center opacity-40"
+          className="absolute right-0 top-0 h-full w-2/3 md:w-1/2 object-cover object-[62%_top] md:object-center opacity-30 md:opacity-40"
         />
         <div
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(to right, hsl(var(--surface)) 0%, hsl(var(--surface) / 0.95) 35%, hsl(var(--surface) / 0.75) 60%, transparent 100%)",
+              "linear-gradient(to right, hsl(var(--surface)) 0%, hsl(var(--surface) / 0.98) 40%, hsl(var(--surface) / 0.85) 60%, hsl(var(--surface) / 0.45) 100%)",
           }}
         />
         <div
-          className="absolute inset-0 opacity-20"
+          className="absolute inset-0 opacity-15 md:opacity-20"
           style={{ background: "var(--gradient-radial-red)" }}
         />
       </div>
@@ -315,7 +315,7 @@ function Science() {
         </h2>
         <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {items.map((s) => (
-            <div key={s.t} className="p-6 bg-background/90 backdrop-blur-sm border border-border rounded-lg">
+            <div key={s.t} className="p-6 bg-background/95 md:bg-background/90 backdrop-blur-sm border border-border rounded-lg">
               <div className="h-1 w-10 bg-primary mb-5" />
               <h3 className="font-display text-2xl uppercase">{s.t}</h3>
               <p className="mt-2 text-muted-foreground text-sm">{s.d}</p>
@@ -326,6 +326,7 @@ function Science() {
     </section>
   );
 }
+
 
 
 function HowItWorks() {
