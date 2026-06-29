@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 
@@ -100,9 +101,9 @@ function OnboardingPage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border">
-        <div className="max-w-3xl mx-auto px-4 md:px-8 h-16 md:h-20 flex items-center">
+        <div className="max-w-3xl mx-auto px-4 md:px-8 h-[72px] md:h-[88px] flex items-center">
           <Link to="/" className="flex items-center transition-[filter] duration-300 hover:drop-shadow-[0_0_14px_rgba(192,57,43,0.6)]">
-            <img src="/logo.png" alt="FortyStrong" className="h-14 md:h-16 w-auto object-contain" />
+            <Logo />
           </Link>
         </div>
       </header>

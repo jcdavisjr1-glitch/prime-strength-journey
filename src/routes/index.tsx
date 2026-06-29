@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import { Logo } from "@/components/Logo";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
@@ -80,9 +81,9 @@ function Nav() {
     "inline-flex items-center justify-center font-display tracking-wider uppercase rounded-sm transition-all duration-200 bg-primary text-primary-foreground hover:bg-primary-glow shadow-[var(--shadow-red)] hover:-translate-y-0.5";
   return (
     <header className="fixed top-0 inset-x-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/60">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 md:h-20 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 h-[72px] md:h-[88px] flex items-center justify-between">
         <Link to="/" className="flex items-center transition-[filter] duration-300 hover:drop-shadow-[0_0_14px_rgba(192,57,43,0.6)]">
-          <img src="/logo.png" alt="FortyStrong" className="h-14 md:h-16 w-auto object-contain" />
+          <Logo />
         </Link>
         <nav className="hidden md:flex items-center gap-8">
           {links.map((l) => (
@@ -111,7 +112,7 @@ function Nav() {
               >
                 Log in
               </Link>
-              <CtaButton href="#pricing" className="hidden sm:inline-flex !px-5 !py-2.5 !text-sm">
+              <CtaButton href="#pricing" className="hidden sm:inline-flex !px-3 !py-2 !text-xs">
                 Get My Free Plan
               </CtaButton>
             </>
