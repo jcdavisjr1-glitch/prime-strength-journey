@@ -672,17 +672,33 @@ function Couples() {
 
         <div className="mt-12 grid md:grid-cols-3 gap-6 md:gap-8">
           {[
-            { src: couplesTraining.url, alt: "Couple training together with a kettlebell", caption: "Two workouts a week. Together." },
-            { src: couplesWalking.url, alt: "Couple walking together at sunset", caption: "Every walk feels easier when you're not doing it alone." },
-            { src: couplesNight.url, alt: "Couple out together at night", caption: "Strength isn't just for the gym. It's for showing up — for each other, for life." },
+            {
+              src: couplesTraining.url,
+              alt: "Couple training together with a kettlebell",
+              white: "Two workouts a week. ",
+              red: "Together.",
+            },
+            {
+              src: couplesWalking.url,
+              alt: "Couple walking together at sunset",
+              white: "Every walk feels easier when you're ",
+              red: "not doing it alone.",
+            },
+            {
+              src: couplesNight.url,
+              alt: "Couple out together at night",
+              white: "Strength isn't just for the gym. It's for showing up — ",
+              red: "for each other, for life.",
+            },
           ].map((img) => (
-            <figure key={img.caption} className="flex flex-col">
-              <div className="relative overflow-hidden rounded-lg border border-border aspect-[4/5]">
-                <img src={img.src} alt={img.alt} className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
-                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-background/80 to-transparent" />
-              </div>
-              <figcaption className="mt-4 italic text-muted-foreground text-base md:text-lg leading-snug text-balance">
-                "{img.caption}"
+            <figure key={img.red} className="relative overflow-hidden rounded-lg border border-border aspect-[4/5]">
+              <img src={img.src} alt={img.alt} className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+              <figcaption className="absolute inset-x-0 bottom-0 p-5 md:p-6 text-left">
+                <span className="font-display text-xl md:text-2xl font-bold text-white leading-tight">
+                  {img.white}
+                  <span className="text-primary">{img.red}</span>
+                </span>
               </figcaption>
             </figure>
           ))}
