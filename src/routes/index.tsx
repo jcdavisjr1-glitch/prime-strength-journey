@@ -666,6 +666,24 @@ function Couples() {
           friendly competition that ends in both of you winning.
         </p>
 
+        <div className="mt-12 grid md:grid-cols-3 gap-6 md:gap-8">
+          {[
+            { src: couplesTraining.url, alt: "Couple training together with a kettlebell", caption: "Two workouts a week. Together." },
+            { src: couplesWalking.url, alt: "Couple walking together at sunset", caption: "Every walk feels easier when you're not doing it alone." },
+            { src: couplesNight.url, alt: "Couple out together at night", caption: "Strength isn't just for the gym. It's for showing up — for each other, for life." },
+          ].map((img) => (
+            <figure key={img.caption} className="flex flex-col">
+              <div className="relative overflow-hidden rounded-lg border border-border aspect-[4/5]">
+                <img src={img.src} alt={img.alt} className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
+                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-background/80 to-transparent" />
+              </div>
+              <figcaption className="mt-4 italic text-muted-foreground text-base md:text-lg leading-snug text-balance">
+                "{img.caption}"
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+
 
         <div className="mt-12 grid md:grid-cols-3 gap-4 md:gap-6">
           {[
