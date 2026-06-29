@@ -168,24 +168,13 @@ function Nav() {
 function Hero() {
   return (
     <section className="relative pt-28 md:pt-36 pb-20 md:pb-32 overflow-hidden">
-      {/* Background photo */}
-      <div
-        className="absolute inset-0 bg-no-repeat bg-cover pointer-events-none"
-        style={{
-          backgroundImage: "url('/hero.jpg')",
-          backgroundPosition: "right center",
-        }}
-      />
-      {/* Mobile: focus subject on right; Desktop overridden above via media query is unnecessary since right-center works for both, but ensure subject visible on small screens */}
+      {/* Background photo — subject on right, negative space on left for text */}
       <style>{`
-        @media (max-width: 767px) {
-          .hero-bg { background-position: 75% center !important; background-size: cover !important; }
-        }
+        .hero-bg { background-image: url('/hero.jpg'); background-repeat: no-repeat; background-size: cover; background-position: right center; }
+        @media (max-width: 767px) { .hero-bg { background-position: 78% center; } }
       `}</style>
-      <div
-        className="hero-bg absolute inset-0 bg-no-repeat bg-cover pointer-events-none"
-        style={{ backgroundImage: "url('/hero.jpg')", backgroundPosition: "right center" }}
-      />
+      <div className="hero-bg absolute inset-0 pointer-events-none" />
+
       {/* Left-to-right dark gradient overlay for text legibility */}
       <div
         className="absolute inset-0 pointer-events-none"
