@@ -366,7 +366,7 @@ function VideoProof() {
   );
 }
 
-
+function HowItWorks() {
   const steps = [
     {
       n: "01",
