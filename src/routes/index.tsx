@@ -793,6 +793,7 @@ function Landing() {
         <Stats />
         <Truth />
         <Science />
+        <VideoProof />
         <HowItWorks />
         <Couples />
         <Pricing />
