@@ -4,6 +4,10 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
+import couplesTraining from "@/assets/couples-training.jpg.asset.json";
+import couplesWalking from "@/assets/couples-walking.jpg.asset.json";
+import couplesNight from "@/assets/couples-night.jpg.asset.json";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
