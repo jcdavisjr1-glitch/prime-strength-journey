@@ -288,18 +288,30 @@ function Science() {
   ];
   return (
     <section className="relative py-20 md:py-28 bg-surface overflow-hidden">
-      {/* Supporting photo — right side, faded into the dark background */}
+      {/* Supporting photo — right side on desktop, lower backdrop on mobile */}
       <div className="absolute inset-0 pointer-events-none">
         <img
           src="/science.jpg"
           alt="Man in a home gym with a power rack and dumbbells"
-          className="absolute right-0 top-0 h-full w-2/3 md:w-1/2 object-cover object-[62%_top] md:object-center opacity-30 md:opacity-40"
+          className="absolute right-0 top-0 h-full w-1/2 object-cover object-center opacity-40 hidden md:block"
+        />
+        <img
+          src="/science.jpg"
+          alt="Man in a home gym with a power rack and dumbbells"
+          className="absolute left-0 bottom-0 h-1/2 w-full object-cover object-[50%_20%] opacity-20 md:hidden"
         />
         <div
           className="absolute inset-0"
           style={{
             background:
               "linear-gradient(to right, hsl(var(--surface)) 0%, hsl(var(--surface) / 0.98) 40%, hsl(var(--surface) / 0.85) 60%, hsl(var(--surface) / 0.45) 100%)",
+          }}
+        />
+        <div
+          className="absolute inset-0 md:hidden"
+          style={{
+            background:
+              "linear-gradient(to bottom, hsl(var(--surface)) 0%, hsl(var(--surface) / 0.95) 40%, transparent 70%)",
           }}
         />
         <div
@@ -326,6 +338,7 @@ function Science() {
     </section>
   );
 }
+
 
 
 
