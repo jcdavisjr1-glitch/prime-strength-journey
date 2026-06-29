@@ -1,5 +1,6 @@
 import { createFileRoute, Link, Outlet, useNavigate, useRouter, useRouterState } from "@tanstack/react-router";
 import { LayoutDashboard, Dumbbell, LineChart, LogOut, User } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/dashboard")({
@@ -29,9 +30,9 @@ function DashboardLayout() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <header className="border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 md:h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 h-[72px] md:h-[88px] flex items-center justify-between">
           <Link to="/" className="flex items-center transition-[filter] duration-300 hover:drop-shadow-[0_0_14px_rgba(192,57,43,0.6)]">
-            <img src="/logo.png" alt="FortyStrong" className="h-14 md:h-16 w-auto object-contain" />
+            <Logo />
           </Link>
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((n) => {

@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/login")({
@@ -48,7 +49,7 @@ function LoginPage() {
     <main className="min-h-screen bg-background text-foreground flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-md">
         <Link to="/" className="block text-center transition-[filter] duration-300 hover:drop-shadow-[0_0_14px_rgba(192,57,43,0.6)]">
-          <img src="/logo.png" alt="FortyStrong" className="h-14 md:h-16 w-auto object-contain mx-auto" />
+          <Logo className="inline-flex" />
         </Link>
         <h1 className="mt-8 font-display uppercase text-4xl md:text-5xl text-center">
           Welcome <span className="text-primary">back</span>
