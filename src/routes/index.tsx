@@ -284,50 +284,42 @@ function Science() {
     { t: "Energy Returns", d: "Muscle is metabolic. More of it means waking up before the alarm — not after." },
     { t: "Joints Get Stronger", d: "Loaded tissue rebuilds. Your knees and hips aren't fragile. They're under-trained." },
     { t: "Disease Risk Drops", d: "Strong people live longer. The data on this stopped being a debate ten years ago." },
-    { t: "Mind Sharpens", d: "Resistance training reshapes the aging brain. Memory, focus, mood — measurably better." },
   ];
   return (
-    <section className="relative py-20 md:py-28 bg-surface overflow-hidden">
-      {/* Supporting photo — right side on desktop, lower backdrop on mobile */}
-      <div className="absolute inset-0 pointer-events-none">
+    <section className="bg-surface overflow-hidden">
+      {/* Full-width image with headline overlay */}
+      <div className="relative h-[340px] md:h-[440px] overflow-hidden">
         <img
           src="/science.jpg"
           alt="Man in a home gym with a power rack and dumbbells"
-          className="absolute right-0 top-0 h-full w-1/2 object-cover object-center opacity-40 hidden md:block"
+          className="absolute inset-0 w-full h-full object-cover object-center"
         />
-        <img
-          src="/science.jpg"
-          alt="Man in a home gym with a power rack and dumbbells"
-          className="absolute left-0 bottom-0 h-1/2 w-full object-cover object-[50%_20%] opacity-20 md:hidden"
-        />
+        {/* Dark left-to-right fade for headline legibility */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(to right, hsl(var(--surface)) 0%, hsl(var(--surface) / 0.98) 40%, hsl(var(--surface) / 0.85) 60%, hsl(var(--surface) / 0.45) 100%)",
+              "linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.65) 45%, rgba(0,0,0,0.35) 100%)",
           }}
         />
+        {/* Subtle red glow accent */}
         <div
-          className="absolute inset-0 md:hidden"
-          style={{
-            background:
-              "linear-gradient(to bottom, hsl(var(--surface)) 0%, hsl(var(--surface) / 0.95) 40%, transparent 70%)",
-          }}
-        />
-        <div
-          className="absolute inset-0 opacity-15 md:opacity-20"
+          className="absolute inset-0 opacity-15"
           style={{ background: "var(--gradient-radial-red)" }}
         />
+        <div className="relative h-full max-w-7xl mx-auto px-4 md:px-8 flex flex-col justify-center">
+          <SectionLabel>The Science</SectionLabel>
+          <h2 className="mt-4 font-display uppercase text-4xl md:text-6xl max-w-3xl text-balance">
+            Strength is not vanity. <span className="text-primary">It's survival.</span>
+          </h2>
+        </div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 md:px-8">
-        <SectionLabel>The Science</SectionLabel>
-        <h2 className="mt-4 font-display uppercase text-4xl md:text-6xl max-w-3xl text-balance">
-          Strength is not vanity. <span className="text-primary">It's survival.</span>
-        </h2>
-        <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      {/* Benefit cards below the image, on dark background */}
+      <div className="py-16 md:py-24 max-w-7xl mx-auto px-4 md:px-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {items.map((s) => (
-            <div key={s.t} className="p-6 bg-background/95 md:bg-background/90 backdrop-blur-sm border border-border rounded-lg">
+            <div key={s.t} className="p-6 bg-background/95 backdrop-blur-sm border border-border rounded-lg">
               <div className="h-1 w-10 bg-primary mb-5" />
               <h3 className="font-display text-2xl uppercase">{s.t}</h3>
               <p className="mt-2 text-muted-foreground text-sm">{s.d}</p>
