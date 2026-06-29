@@ -287,15 +287,35 @@ function Science() {
     { t: "Mind Sharpens", d: "Resistance training reshapes the aging brain. Memory, focus, mood — measurably better." },
   ];
   return (
-    <section className="py-20 md:py-28 bg-surface">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
+    <section className="relative py-20 md:py-28 bg-surface overflow-hidden">
+      {/* Supporting photo — right side, faded into the dark background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <img
+          src="/science.jpg"
+          alt="Man in a home gym with a power rack and dumbbells"
+          className="absolute right-0 top-0 h-full w-1/2 md:w-3/5 object-cover object-center opacity-40"
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to right, hsl(var(--surface)) 0%, hsl(var(--surface) / 0.95) 35%, hsl(var(--surface) / 0.75) 60%, transparent 100%)",
+          }}
+        />
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{ background: "var(--gradient-radial-red)" }}
+        />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 md:px-8">
         <SectionLabel>The Science</SectionLabel>
         <h2 className="mt-4 font-display uppercase text-4xl md:text-6xl max-w-3xl text-balance">
           Strength is not vanity. <span className="text-primary">It's survival.</span>
         </h2>
         <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {items.map((s) => (
-            <div key={s.t} className="p-6 bg-background border border-border rounded-lg">
+            <div key={s.t} className="p-6 bg-background/90 backdrop-blur-sm border border-border rounded-lg">
               <div className="h-1 w-10 bg-primary mb-5" />
               <h3 className="font-display text-2xl uppercase">{s.t}</h3>
               <p className="mt-2 text-muted-foreground text-sm">{s.d}</p>
@@ -306,6 +326,7 @@ function Science() {
     </section>
   );
 }
+
 
 function HowItWorks() {
   const steps = [
