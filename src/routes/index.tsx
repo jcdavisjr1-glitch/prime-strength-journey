@@ -331,8 +331,40 @@ function Science() {
   );
 }
 
-
-
+function VideoProof() {
+  return (
+    <section className="py-20 md:py-28">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <SectionLabel>The Proof</SectionLabel>
+        <div className="mt-8 flex flex-col items-center">
+          <div className="w-full max-w-[640px] rounded-lg border border-border overflow-hidden bg-surface">
+            <div className="relative w-full aspect-video">
+              <iframe
+                className="absolute inset-0 w-full h-full"
+                src="https://www.youtube.com/embed/rv4w-oFrs6c"
+                title="Mayo Clinic Minute: Aging and the benefits of exercising"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                loading="lazy"
+              />
+            </div>
+          </div>
+          <p className="mt-4 text-sm text-muted-foreground text-center">
+            Source:{" "}
+            <a
+              href="https://newsnetwork.mayoclinic.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              Mayo Clinic News Network
+            </a>
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function HowItWorks() {
   const steps = [
@@ -761,6 +793,7 @@ function Landing() {
         <Stats />
         <Truth />
         <Science />
+        <VideoProof />
         <HowItWorks />
         <Couples />
         <Pricing />
