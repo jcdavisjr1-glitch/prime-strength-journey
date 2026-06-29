@@ -168,8 +168,24 @@ function Nav() {
 function Hero() {
   return (
     <section className="relative pt-28 md:pt-36 pb-20 md:pb-32 overflow-hidden">
+      {/* Background photo — subject on right, negative space on left for text */}
+      <style>{`
+        .hero-bg { background-image: url('/hero.jpg'); background-repeat: no-repeat; background-size: cover; background-position: right center; }
+        @media (max-width: 767px) { .hero-bg { background-position: 78% center; } }
+      `}</style>
+      <div className="hero-bg absolute inset-0 pointer-events-none" />
+
+      {/* Left-to-right dark gradient overlay for text legibility */}
       <div
-        className="absolute inset-0 opacity-60 pointer-events-none"
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(to right, hsl(var(--background)) 0%, hsl(var(--background) / 0.9) 35%, hsl(var(--background) / 0.55) 60%, hsl(var(--background) / 0.2) 100%)",
+        }}
+      />
+      {/* Existing red glow, reduced opacity to blend with photo */}
+      <div
+        className="absolute inset-0 opacity-25 pointer-events-none mix-blend-screen"
         style={{ background: "var(--gradient-radial-red)" }}
       />
       <div className="relative max-w-7xl mx-auto px-4 md:px-8 grid lg:grid-cols-2 gap-12 items-center">
@@ -195,6 +211,7 @@ function Hero() {
     </section>
   );
 }
+
 
 function Stats() {
   const stats = [
