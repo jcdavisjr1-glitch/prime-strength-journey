@@ -119,6 +119,26 @@ function DashboardHome() {
           ))}
         </div>
       </div>
+
+      <Link
+        to="/dashboard/walks"
+        className="mt-6 block p-5 rounded-lg border border-border bg-surface hover:border-primary transition-colors"
+      >
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <div className="font-display tracking-widest uppercase text-xs text-muted-foreground flex items-center gap-2">
+              <Footprints className="h-4 w-4" /> Walks this week
+            </div>
+            <div className="mt-2 font-display uppercase text-2xl">
+              {walkWeekTotal} <span className="text-muted-foreground text-base">of {walkGoal} min</span>
+            </div>
+          </div>
+          <div className="font-display uppercase text-2xl text-primary tabular-nums">{walkPct}%</div>
+        </div>
+        <div className="mt-3 h-2 w-full rounded-full bg-background overflow-hidden border border-border">
+          <div className="h-full bg-primary transition-[width] duration-500" style={{ width: `${walkPct}%` }} />
+        </div>
+      </Link>
     </section>
   );
 }
