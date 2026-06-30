@@ -113,7 +113,7 @@ export const syncMuscleWikiMedia = createServerFn({ method: "POST" })
 
     for (const name of names) {
       try {
-        const url = `${MUSCLEWIKI_BASE}?name=${encodeURIComponent(name)}`;
+        const url = `${MUSCLEWIKI_BASE}?search=${encodeURIComponent(name)}&limit=10`;
         const res = await fetch(url, {
           headers: { "X-API-Key": apiKey, Accept: "application/json" },
         });
