@@ -28,6 +28,19 @@ function AccountPage() {
   const [syncResult, setSyncResult] = useState<SyncResult | null>(null);
   const [syncErr, setSyncErr] = useState<string | null>(null);
 
+  const handleRunSync = async () => {
+    setSyncErr(null);
+    setSyncing(true);
+    try {
+      const r = await runSync();
+      setSyncResult(r);
+    } catch (e) {
+      setSyncErr(e instanceof Error ? e.message : "Sync failed.");
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
   }, [loading, user, navigate]);
@@ -141,18 +154,9 @@ function AccountPage() {
         </p>
         <button
           type="button"
-          onClick={async () => {
-            setSyncErr(null);
+          onClick={() => {
             setSyncResult(null);
-            setSyncing(true);
-            try {
-              const r = await runSync();
-              setSyncResult(r);
-            } catch (e) {
-              setSyncErr(e instanceof Error ? e.message : "Sync failed.");
-            } finally {
-              setSyncing(false);
-            }
+            handleRunSync();
           }}
           disabled={syncing}
           className="mt-4 font-display tracking-wider uppercase text-sm px-5 py-2.5 rounded-sm border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-60"
@@ -180,6 +184,17 @@ function AccountPage() {
                 {syncResult.errors.length} error{syncResult.errors.length === 1 ? "" : "s"}
               </span>
             </div>
+
+            <button
+              type="button"
+              onClick={handleRunSync}
+              disabled={syncing}
+              className="font-display tracking-wider uppercase text-xs px-4 py-2 rounded-sm border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-60"
+            >
+              {syncing ? "Syncing…" : "Run sync again"}
+            </button>
+
+
 
             {syncResult.unmatched.length > 0 && (
               <details className="rounded-sm border border-border bg-background/50" open>
