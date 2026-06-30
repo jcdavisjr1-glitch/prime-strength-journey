@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { getMyProfileAndAccess } from "@/lib/profile.functions";
+import { updateWalkingGoal } from "@/lib/walking-logs.functions";
 
 export const Route = createFileRoute("/dashboard/account")({
   ssr: false,
@@ -16,20 +17,50 @@ function AccountPage() {
   const router = useRouter();
   const { user, loading } = useSupabaseSession();
   const fetchData = useServerFn(getMyProfileAndAccess);
+  const saveGoal = useServerFn(updateWalkingGoal);
   const [data, setData] = useState<Awaited<ReturnType<typeof getMyProfileAndAccess>> | null>(null);
+  const [goal, setGoal] = useState<string>("60");
+  const [savingGoal, setSavingGoal] = useState(false);
+  const [goalMsg, setGoalMsg] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
   }, [loading, user, navigate]);
 
   useEffect(() => {
-    if (user) fetchData({}).then(setData).catch(() => {});
+    if (user) {
+      fetchData({})
+        .then((d) => {
+          setData(d);
+          setGoal(String(d.profile?.weekly_walking_goal_minutes ?? 60));
+        })
+        .catch(() => {});
+    }
   }, [user, fetchData]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
     router.invalidate();
     navigate({ to: "/login" });
+  };
+
+  const handleSaveGoal = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setGoalMsg(null);
+    const n = Number(goal);
+    if (!Number.isFinite(n) || n < 0) {
+      setGoalMsg("Enter a valid number.");
+      return;
+    }
+    setSavingGoal(true);
+    try {
+      await saveGoal({ data: { weekly_walking_goal_minutes: Math.round(n) } });
+      setGoalMsg("Saved.");
+    } catch (err) {
+      setGoalMsg(err instanceof Error ? err.message : "Could not save.");
+    } finally {
+      setSavingGoal(false);
+    }
   };
 
   if (loading || !user) {
@@ -68,6 +99,31 @@ function AccountPage() {
           value={cap(data?.profile?.equipment_type) || "Not set"}
         />
       </div>
+
+      <form onSubmit={handleSaveGoal} className="mt-8 p-5 bg-surface border border-border rounded-lg">
+        <div className="font-display tracking-widest uppercase text-xs text-muted-foreground">
+          Weekly walking goal
+        </div>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <input
+            type="number"
+            min={0}
+            max={10000}
+            value={goal}
+            onChange={(e) => setGoal(e.target.value)}
+            className="w-28 px-4 py-3 bg-background border border-border rounded-sm text-foreground focus:outline-none focus:border-primary"
+          />
+          <span className="text-muted-foreground">minutes / week</span>
+          <button
+            type="submit"
+            disabled={savingGoal}
+            className="ml-auto font-display tracking-wider uppercase text-sm px-5 py-2.5 rounded-sm bg-primary text-primary-foreground hover:bg-primary-glow transition-colors disabled:opacity-60"
+          >
+            {savingGoal ? "Saving…" : "Save"}
+          </button>
+        </div>
+        {goalMsg && <div className="mt-3 text-sm text-muted-foreground">{goalMsg}</div>}
+      </form>
 
       <button
         onClick={signOut}
