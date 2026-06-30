@@ -33,7 +33,9 @@ function ProgressPage() {
   const navigate = useNavigate();
   const { user, loading } = useSupabaseSession();
   const fetchLogs = useServerFn(getAllLogs);
+  const fetchBlocks = useServerFn(getBlockHistory);
   const [logs, setLogs] = useState<Log[] | null>(null);
+  const [blocks, setBlocks] = useState<TrainingBlock[]>([]);
   const [selected, setSelected] = useState<string>("");
 
   useEffect(() => {
@@ -49,6 +51,10 @@ function ProgressPage() {
         if (first) setSelected(first.exercise_name);
       })
       .catch(() => setLogs([]));
+    fetchBlocks({})
+      .then(setBlocks)
+      .catch(() => {});
+  }, [user, fetchLogs, fetchBlocks, navigate]);
   }, [user, fetchLogs]);
 
   const exercises = useMemo(() => {
