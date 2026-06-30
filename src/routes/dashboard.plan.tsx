@@ -138,6 +138,7 @@ function MyPlan() {
             index={index}
             completed={!!completed[exercise.name]}
             lastLog={latest[exercise.name]}
+            recommendation={recs[exercise.name]}
             onToggle={() => toggleExercise(exercise.name)}
             onLog={() => setLogging(exercise)}
           />
@@ -152,12 +153,18 @@ function MyPlan() {
       {logging && (
         <LogModal
           exercise={logging}
+          recommendedWeight={recs[logging.name]?.recommended_weight ?? null}
           onClose={() => setLogging(null)}
           onSave={async (payload) => {
             const name = logging.name;
             await submitLog({ data: { exercise_name: name, ...payload } });
+            try {
+              await markApplied({ data: { exercise_name: name } });
+            } catch {
+              /* ignore */
+            }
             setLogging(null);
-            refreshLatest();
+            refreshAfterLog();
             window.dispatchEvent(new CustomEvent("fs:logged", { detail: { name } }));
           }}
         />
