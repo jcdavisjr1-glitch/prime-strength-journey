@@ -140,9 +140,11 @@ function MyPlan() {
           exercise={logging}
           onClose={() => setLogging(null)}
           onSave={async (payload) => {
-            await submitLog({ data: { exercise_name: logging.name, ...payload } });
+            const name = logging.name;
+            await submitLog({ data: { exercise_name: name, ...payload } });
             setLogging(null);
             refreshLatest();
+            window.dispatchEvent(new CustomEvent("fs:logged", { detail: { name } }));
           }}
         />
       )}
