@@ -97,12 +97,7 @@ function extractCandidates(payload: any): any[] {
 export const syncMuscleWikiMedia = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async (): Promise<SyncResult> => {
-    const apiKey = process.env.MUSCLEWIKI_API_KEY;
-    if (!apiKey) throw new Error("MUSCLEWIKI_API_KEY is not configured.");
-
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const names = collectExerciseNames();
-
     const result: SyncResult = {
       total: names.length,
       matched: 0,
@@ -111,8 +106,17 @@ export const syncMuscleWikiMedia = createServerFn({ method: "POST" })
       errors: [],
     };
 
-    for (const name of names) {
-      try {
+    try {
+      const apiKey = process.env.MUSCLEWIKI_API_KEY;
+      if (!apiKey) {
+        result.errors.push({ name: "*", error: "MUSCLEWIKI_API_KEY is not configured." });
+        return result;
+      }
+
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+      for (const name of names) {
+        try {
         const url = `${MUSCLEWIKI_BASE}?search=${encodeURIComponent(name)}&limit=10`;
         const res = await fetch(url, {
           headers: { "X-API-Key": apiKey, Accept: "application/json" },
