@@ -45,9 +45,12 @@ export type SyncResult = {
 
 function collectExerciseNames(): string[] {
   const names = new Set<string>();
-  for (const level of Object.values(plans)) {
-    for (const equip of Object.values(level)) {
-      for (const day of Object.values(equip)) {
+  const levels = Object.values(plans) as Array<(typeof plans)["beginner"]>;
+  for (const level of levels) {
+    const equips = Object.values(level) as Array<(typeof level)["gym"]>;
+    for (const equip of equips) {
+      const days = Object.values(equip) as Array<(typeof equip)["day1"]>;
+      for (const day of days) {
         for (const ex of day.exercises) names.add(ex.name);
       }
     }
