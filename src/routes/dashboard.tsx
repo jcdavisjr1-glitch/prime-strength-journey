@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useNavigate, useRouter, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Dumbbell, LineChart, LogOut, User } from "lucide-react";
+import { LayoutDashboard, Dumbbell, LineChart, LogOut, User, Footprints } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { NotificationsBell } from "@/components/NotificationsBell";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,7 @@ export const Route = createFileRoute("/dashboard")({
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/dashboard/plan", label: "My Plan", icon: Dumbbell },
+  { to: "/dashboard/walks", label: "Walks", icon: Footprints },
   { to: "/dashboard/progress", label: "Progress", icon: LineChart },
   { to: "/dashboard/account", label: "Account", icon: User },
 ] as const;

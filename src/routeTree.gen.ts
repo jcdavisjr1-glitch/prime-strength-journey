@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as DashboardWalksRouteImport } from './routes/dashboard.walks'
 import { Route as DashboardProgressRouteImport } from './routes/dashboard.progress'
 import { Route as DashboardPlanRouteImport } from './routes/dashboard.plan'
 import { Route as DashboardAccountRouteImport } from './routes/dashboard.account'
@@ -43,6 +44,11 @@ const IndexRoute = IndexRouteImport.update({
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardWalksRoute = DashboardWalksRouteImport.update({
+  id: '/walks',
+  path: '/walks',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardProgressRoute = DashboardProgressRouteImport.update({
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/account': typeof DashboardAccountRoute
   '/dashboard/plan': typeof DashboardPlanRoute
   '/dashboard/progress': typeof DashboardProgressRoute
+  '/dashboard/walks': typeof DashboardWalksRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -92,6 +99,7 @@ export interface FileRoutesByTo {
   '/dashboard/account': typeof DashboardAccountRoute
   '/dashboard/plan': typeof DashboardPlanRoute
   '/dashboard/progress': typeof DashboardProgressRoute
+  '/dashboard/walks': typeof DashboardWalksRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/dashboard/account': typeof DashboardAccountRoute
   '/dashboard/plan': typeof DashboardPlanRoute
   '/dashboard/progress': typeof DashboardProgressRoute
+  '/dashboard/walks': typeof DashboardWalksRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -119,6 +128,7 @@ export interface FileRouteTypes {
     | '/dashboard/account'
     | '/dashboard/plan'
     | '/dashboard/progress'
+    | '/dashboard/walks'
     | '/dashboard/'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/dashboard/account'
     | '/dashboard/plan'
     | '/dashboard/progress'
+    | '/dashboard/walks'
     | '/dashboard'
     | '/api/public/payments/webhook'
   id:
@@ -142,6 +153,7 @@ export interface FileRouteTypes {
     | '/dashboard/account'
     | '/dashboard/plan'
     | '/dashboard/progress'
+    | '/dashboard/walks'
     | '/dashboard/'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
@@ -192,6 +204,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/walks': {
+      id: '/dashboard/walks'
+      path: '/walks'
+      fullPath: '/dashboard/walks'
+      preLoaderRoute: typeof DashboardWalksRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/progress': {
       id: '/dashboard/progress'
       path: '/progress'
@@ -234,6 +253,7 @@ interface DashboardRouteChildren {
   DashboardAccountRoute: typeof DashboardAccountRoute
   DashboardPlanRoute: typeof DashboardPlanRoute
   DashboardProgressRoute: typeof DashboardProgressRoute
+  DashboardWalksRoute: typeof DashboardWalksRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
@@ -241,6 +261,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAccountRoute: DashboardAccountRoute,
   DashboardPlanRoute: DashboardPlanRoute,
   DashboardProgressRoute: DashboardProgressRoute,
+  DashboardWalksRoute: DashboardWalksRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 
