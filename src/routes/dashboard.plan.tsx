@@ -13,7 +13,12 @@ import {
   markRecommendationApplied,
   type Recommendation,
 } from "@/lib/progression.functions";
-import { CheckCircle2, X, Zap } from "lucide-react";
+import {
+  getActiveBlock,
+  getBlockHistory,
+  type TrainingBlock,
+} from "@/lib/training-blocks.functions";
+import { CheckCircle2, X, Zap, Trophy } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/plan")({
   ssr: false,
