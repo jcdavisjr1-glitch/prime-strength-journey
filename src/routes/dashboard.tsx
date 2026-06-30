@@ -1,6 +1,7 @@
 import { createFileRoute, Link, Outlet, useNavigate, useRouter, useRouterState } from "@tanstack/react-router";
 import { LayoutDashboard, Dumbbell, LineChart, LogOut, User } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { NotificationsBell } from "@/components/NotificationsBell";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/dashboard")({
@@ -52,14 +53,17 @@ function DashboardLayout() {
               );
             })}
           </nav>
-          <button
-            onClick={handleSignOut}
-            className="hidden md:flex items-center gap-2 px-4 py-2 rounded-sm font-display tracking-widest uppercase text-xs text-muted-foreground hover:text-primary transition-colors"
-            aria-label="Sign out"
-          >
-            <LogOut className="h-4 w-4" />
-            <span>Sign out</span>
-          </button>
+          <div className="flex items-center gap-1">
+            <NotificationsBell />
+            <button
+              onClick={handleSignOut}
+              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-sm font-display tracking-widest uppercase text-xs text-muted-foreground hover:text-primary transition-colors"
+              aria-label="Sign out"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Sign out</span>
+            </button>
+          </div>
         </div>
       </header>
 
