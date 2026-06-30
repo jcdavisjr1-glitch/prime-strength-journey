@@ -247,6 +247,35 @@ function Field({ label, value }: { label: string; value: string }) {
   );
 }
 
+function StatTile({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: number;
+  accent?: boolean;
+}) {
+  return (
+    <div
+      className={`p-4 rounded-sm border ${
+        accent ? "border-primary/40 bg-primary/10" : "border-border bg-background/50"
+      }`}
+    >
+      <div className="font-display tracking-widest uppercase text-[10px] text-muted-foreground">
+        {label}
+      </div>
+      <div
+        className={`mt-1 font-display text-3xl tabular-nums ${
+          accent ? "text-primary" : "text-foreground"
+        }`}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
+
 function cap(s: string | null | undefined) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
 }
