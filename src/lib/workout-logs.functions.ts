@@ -38,7 +38,7 @@ export const getLatestLogsByExercise = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const { data, error } = await supabase
       .from("workout_logs")
-      .select("exercise_name, weight, sets, reps, logged_at")
+      .select("exercise_name, weight, sets, reps, reps_completed, difficulty, logged_at")
       .eq("user_id", userId)
       .order("logged_at", { ascending: false })
       .limit(500);
@@ -46,7 +46,14 @@ export const getLatestLogsByExercise = createServerFn({ method: "GET" })
 
     const latest: Record<
       string,
-      { weight: number | null; sets: number | null; reps: number | null; logged_at: string }
+      {
+        weight: number | null;
+        sets: number | null;
+        reps: number | null;
+        reps_completed: number | null;
+        difficulty: "too_easy" | "just_right" | "too_hard" | null;
+        logged_at: string;
+      }
     > = {};
     for (const row of data ?? []) {
       if (!latest[row.exercise_name]) {
@@ -54,6 +61,8 @@ export const getLatestLogsByExercise = createServerFn({ method: "GET" })
           weight: row.weight as number | null,
           sets: row.sets,
           reps: row.reps,
+          reps_completed: (row as { reps_completed: number | null }).reps_completed,
+          difficulty: (row as { difficulty: "too_easy" | "just_right" | "too_hard" | null }).difficulty,
           logged_at: row.logged_at,
         };
       }
