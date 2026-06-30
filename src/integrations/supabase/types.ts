@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      exercise_swaps: {
+        Row: {
+          block_id: string
+          id: string
+          original_exercise: string
+          replacement_exercise: string
+          swap_reason: string
+          swapped_at: string
+          user_id: string
+        }
+        Insert: {
+          block_id: string
+          id?: string
+          original_exercise: string
+          replacement_exercise: string
+          swap_reason: string
+          swapped_at?: string
+          user_id: string
+        }
+        Update: {
+          block_id?: string
+          id?: string
+          original_exercise?: string
+          replacement_exercise?: string
+          swap_reason?: string
+          swapped_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercise_swaps_block_id_fkey"
+            columns: ["block_id"]
+            isOneToOne: false
+            referencedRelation: "training_blocks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mailing_list: {
         Row: {
           created_at: string
@@ -41,6 +79,33 @@ export type Database = {
           subscribed?: boolean
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          read: boolean
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          read?: boolean
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          type?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -203,6 +268,48 @@ export type Database = {
         }
         Relationships: []
       }
+      training_blocks: {
+        Row: {
+          block_number: number
+          created_at: string
+          end_date: string | null
+          equipment_type: string
+          fitness_level: string
+          id: string
+          outcome: string | null
+          review_score: number | null
+          start_date: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          block_number?: number
+          created_at?: string
+          end_date?: string | null
+          equipment_type: string
+          fitness_level: string
+          id?: string
+          outcome?: string | null
+          review_score?: number | null
+          start_date?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          block_number?: number
+          created_at?: string
+          end_date?: string | null
+          equipment_type?: string
+          fitness_level?: string
+          id?: string
+          outcome?: string | null
+          review_score?: number | null
+          start_date?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       workout_logs: {
         Row: {
           difficulty: string | null
@@ -248,6 +355,7 @@ export type Database = {
         Args: { _exercise_name: string; _user_id: string }
         Returns: undefined
       }
+      daily_review_check: { Args: never; Returns: undefined }
       exercise_category: { Args: { _name: string }; Returns: string }
       has_active_subscription: {
         Args: { check_env?: string; user_uuid: string }
@@ -257,6 +365,11 @@ export type Database = {
         Args: { check_env?: string; user_uuid: string }
         Returns: boolean
       }
+      next_fitness_level: {
+        Args: { _direction: string; _level: string }
+        Returns: string
+      }
+      run_three_week_review: { Args: { _user_id: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

@@ -13,7 +13,12 @@ import {
   markRecommendationApplied,
   type Recommendation,
 } from "@/lib/progression.functions";
-import { CheckCircle2, X, Zap } from "lucide-react";
+import {
+  getActiveBlock,
+  getBlockHistory,
+  type TrainingBlock,
+} from "@/lib/training-blocks.functions";
+import { CheckCircle2, X, Zap, Trophy } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/plan")({
   ssr: false,
@@ -32,9 +37,13 @@ function MyPlan() {
   const fetchRecs = useServerFn(getMyRecommendations);
   const markApplied = useServerFn(markRecommendationApplied);
   const submitLog = useServerFn(logWorkout);
+  const fetchBlock = useServerFn(getActiveBlock);
+  const fetchBlockHistory = useServerFn(getBlockHistory);
   const [data, setData] = useState<Data | null>(null);
   const [latest, setLatest] = useState<LatestLogs>({});
   const [recs, setRecs] = useState<Record<string, Recommendation>>({});
+  const [block, setBlock] = useState<TrainingBlock | null>(null);
+  const [levelUpBanner, setLevelUpBanner] = useState<string | null>(null);
   const [fetched, setFetched] = useState(false);
   const [activeDay, setActiveDay] = useState<"day1" | "day2">("day1");
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
@@ -61,7 +70,24 @@ function MyPlan() {
     fetchRecs({})
       .then(setRecs)
       .catch(() => {});
-  }, [user, fetchData, fetchLatest, fetchRecs, navigate]);
+    fetchBlock({})
+      .then(setBlock)
+      .catch(() => {});
+    fetchBlockHistory({})
+      .then((history) => {
+        const lastUp = [...history]
+          .reverse()
+          .find((b) => b.status === "complete" && b.outcome === "level_up");
+        if (lastUp) {
+          const seenKey = `fs:levelup-seen:${lastUp.id}`;
+          if (typeof window !== "undefined" && !window.localStorage.getItem(seenKey)) {
+            const currentLevel = history.find((b) => b.status === "active" || b.status === "deload");
+            setLevelUpBanner(currentLevel?.fitness_level ?? lastUp.fitness_level);
+          }
+        }
+      })
+      .catch(() => {});
+  }, [user, fetchData, fetchLatest, fetchRecs, fetchBlock, fetchBlockHistory, navigate]);
 
   const refreshAfterLog = () => {
     fetchLatest({})
@@ -88,8 +114,31 @@ function MyPlan() {
     ? (equipment as "gym" | "home" | "bodyweight")
     : "gym";
 
-  const plan = plans[safeLevel][safeEquipment];
-  const day = plan[activeDay];
+  const basePlan = plans[safeLevel][safeEquipment];
+  const isDeload = block?.status === "deload";
+  const blockNumber = block?.block_number ?? 1;
+  const weekNumber = block
+    ? Math.min(
+        3,
+        Math.max(
+          1,
+          Math.floor(
+            (Date.now() - new Date(block.start_date).getTime()) /
+              (7 * 24 * 60 * 60 * 1000),
+          ) + 1,
+        ),
+      )
+    : 1;
+  const weekProgressPct = Math.min(100, Math.round((weekNumber / 3) * 100));
+
+  const day = (() => {
+    const d = basePlan[activeDay];
+    if (!isDeload) return d;
+    return {
+      ...d,
+      exercises: d.exercises.map((ex) => ({ ...ex, sets: 2 })),
+    };
+  })();
 
   const toggleExercise = (name: string) =>
     setCompleted((p) => ({ ...p, [name]: !p[name] }));
@@ -97,8 +146,73 @@ function MyPlan() {
   const completedCount = day.exercises.filter((ex) => completed[ex.name]).length;
   const progress = Math.round((completedCount / day.exercises.length) * 100);
 
+  const dismissLevelUp = () => {
+    if (typeof window === "undefined") return;
+    // Mark all completed level_up blocks as seen
+    fetchBlockHistory({}).then((history) => {
+      history
+        .filter((b) => b.status === "complete" && b.outcome === "level_up")
+        .forEach((b) => window.localStorage.setItem(`fs:levelup-seen:${b.id}`, "1"));
+    });
+    setLevelUpBanner(null);
+  };
+
   return (
     <section className="max-w-4xl mx-auto px-4 md:px-8 py-12 md:py-20">
+      {levelUpBanner && (
+        <div className="mb-6 relative p-4 md:p-5 rounded-lg border border-primary/60 bg-gradient-to-r from-primary/15 to-primary/5">
+          <button
+            onClick={dismissLevelUp}
+            aria-label="Dismiss"
+            className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <div className="flex items-start gap-3 pr-6">
+            <Trophy className="h-6 w-6 text-primary shrink-0" fill="currentColor" />
+            <div>
+              <div className="font-display uppercase tracking-widest text-xs text-primary">
+                Promotion earned
+              </div>
+              <p className="mt-1 font-display uppercase text-xl md:text-2xl">
+                Welcome to {cap(levelUpBanner)}.
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Your plan has been updated.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="mb-6 p-4 rounded-lg border border-border bg-surface">
+        <div className="flex items-center justify-between gap-3">
+          <span className="font-display uppercase tracking-widest text-[11px] text-primary">
+            Block {blockNumber} · Week {weekNumber} of 3
+          </span>
+          {isDeload && (
+            <span className="font-display uppercase tracking-widest text-[10px] text-muted-foreground">
+              Deload
+            </span>
+          )}
+        </div>
+        <div className="mt-2 h-1.5 w-full rounded-full bg-background overflow-hidden">
+          <div
+            className="h-full bg-primary transition-all"
+            style={{ width: `${weekProgressPct}%` }}
+          />
+        </div>
+        {isDeload && (
+          <p className="mt-3 text-sm text-muted-foreground">
+            <span className="font-display uppercase tracking-widest text-[11px] text-primary">
+              Deload week — recovery in progress.
+            </span>{" "}
+            Sets and weights are dialed back so your body adapts and gets stronger before
+            the next block.
+          </p>
+        )}
+      </div>
+
       <div className="font-display uppercase tracking-[0.3em] text-primary text-sm">
         My Plan
       </div>
