@@ -185,6 +185,17 @@ function AccountPage() {
               </span>
             </div>
 
+            <button
+              type="button"
+              onClick={handleRunSync}
+              disabled={syncing}
+              className="font-display tracking-wider uppercase text-xs px-4 py-2 rounded-sm border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-60"
+            >
+              {syncing ? "Syncing…" : "Run sync again"}
+            </button>
+
+
+
             {syncResult.unmatched.length > 0 && (
               <details className="rounded-sm border border-border bg-background/50" open>
                 <summary className="cursor-pointer px-4 py-2 font-display tracking-widest uppercase text-xs text-muted-foreground">
