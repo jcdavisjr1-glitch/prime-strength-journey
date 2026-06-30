@@ -55,7 +55,7 @@ function ProgressPage() {
       .then(setBlocks)
       .catch(() => {});
   }, [user, fetchLogs, fetchBlocks, navigate]);
-  }, [user, fetchLogs]);
+  
 
   const exercises = useMemo(() => {
     if (!logs) return [];
