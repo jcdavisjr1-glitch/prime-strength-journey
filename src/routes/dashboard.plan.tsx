@@ -8,7 +8,12 @@ import {
   logWorkout,
 } from "@/lib/workout-logs.functions";
 import { plans, type Exercise } from "@/lib/plans";
-import { CheckCircle2, X } from "lucide-react";
+import {
+  getMyRecommendations,
+  markRecommendationApplied,
+  type Recommendation,
+} from "@/lib/progression.functions";
+import { CheckCircle2, X, Zap } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/plan")({
   ssr: false,
