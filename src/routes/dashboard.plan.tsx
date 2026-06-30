@@ -19,6 +19,7 @@ import {
   type TrainingBlock,
 } from "@/lib/training-blocks.functions";
 import { CheckCircle2, X, Zap, Trophy } from "lucide-react";
+import { WatchFormButton } from "@/components/WatchFormButton";
 
 export const Route = createFileRoute("/dashboard/plan")({
   ssr: false,
