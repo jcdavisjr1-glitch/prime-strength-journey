@@ -9,6 +9,8 @@ export const logWorkout = createServerFn({ method: "POST" })
       weight?: number | null;
       sets?: number | null;
       reps?: number | null;
+      reps_completed?: number | null;
+      difficulty?: "too_easy" | "just_right" | "too_hard" | null;
     }) => input,
   )
   .handler(async ({ data, context }) => {
@@ -21,8 +23,10 @@ export const logWorkout = createServerFn({ method: "POST" })
         weight: data.weight ?? null,
         sets: data.sets ?? null,
         reps: data.reps ?? null,
+        reps_completed: data.reps_completed ?? null,
+        difficulty: data.difficulty ?? null,
       })
-      .select("id, exercise_name, weight, sets, reps, logged_at")
+      .select("id, exercise_name, weight, sets, reps, reps_completed, difficulty, logged_at")
       .single();
     if (error) throw new Error(error.message);
     return row;
