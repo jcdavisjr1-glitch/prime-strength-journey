@@ -190,6 +190,65 @@ function ProgressPage() {
           )}
         </div>
       </div>
+
+      <div className="mt-12">
+        <div className="font-display uppercase tracking-[0.3em] text-primary text-xs">
+          Your journey
+        </div>
+        <h2 className="mt-2 font-display uppercase text-2xl">Block history</h2>
+        {blocks.length === 0 ? (
+          <p className="mt-4 text-sm text-muted-foreground">
+            Your first training block is in progress. History appears as you complete blocks.
+          </p>
+        ) : (
+          <ol className="mt-6 space-y-3">
+            {blocks.map((b) => {
+              const start = new Date(b.start_date);
+              const end = b.end_date ? new Date(b.end_date) : new Date();
+              const days = Math.max(1, Math.round((end.getTime() - start.getTime()) / 86400000));
+              const outcomeLabel =
+                b.status === "active"
+                  ? "In progress"
+                  : b.status === "deload"
+                    ? "Deload week"
+                    : b.outcome === "level_up"
+                      ? "Leveled up"
+                      : b.outcome === "level_down"
+                        ? "Stepped back"
+                        : "Stayed on level";
+              const OutcomeIcon =
+                b.outcome === "level_up"
+                  ? ArrowUp
+                  : b.outcome === "level_down"
+                    ? ArrowDown
+                    : Minus;
+              return (
+                <li
+                  key={b.id}
+                  className="p-4 border border-border bg-surface rounded-lg flex flex-wrap items-center justify-between gap-3"
+                >
+                  <div>
+                    <div className="font-display uppercase tracking-widest text-xs text-primary">
+                      Block {b.block_number} · {cap(b.fitness_level)}
+                    </div>
+                    <div className="mt-1 text-sm text-muted-foreground">
+                      {days} day{days === 1 ? "" : "s"} · {cap(b.equipment_type)}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 font-display uppercase tracking-widest text-xs text-foreground">
+                    <OutcomeIcon className="h-4 w-4 text-primary" />
+                    <span>{outcomeLabel}</span>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        )}
+      </div>
     </section>
   );
+}
+
+function cap(s: string) {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
