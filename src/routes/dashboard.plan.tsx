@@ -159,6 +159,60 @@ function MyPlan() {
 
   return (
     <section className="max-w-4xl mx-auto px-4 md:px-8 py-12 md:py-20">
+      {levelUpBanner && (
+        <div className="mb-6 relative p-4 md:p-5 rounded-lg border border-primary/60 bg-gradient-to-r from-primary/15 to-primary/5">
+          <button
+            onClick={dismissLevelUp}
+            aria-label="Dismiss"
+            className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <div className="flex items-start gap-3 pr-6">
+            <Trophy className="h-6 w-6 text-primary shrink-0" fill="currentColor" />
+            <div>
+              <div className="font-display uppercase tracking-widest text-xs text-primary">
+                Promotion earned
+              </div>
+              <p className="mt-1 font-display uppercase text-xl md:text-2xl">
+                Welcome to {cap(levelUpBanner)}.
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Your plan has been updated.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="mb-6 p-4 rounded-lg border border-border bg-surface">
+        <div className="flex items-center justify-between gap-3">
+          <span className="font-display uppercase tracking-widest text-[11px] text-primary">
+            Block {blockNumber} · Week {weekNumber} of 3
+          </span>
+          {isDeload && (
+            <span className="font-display uppercase tracking-widest text-[10px] text-muted-foreground">
+              Deload
+            </span>
+          )}
+        </div>
+        <div className="mt-2 h-1.5 w-full rounded-full bg-background overflow-hidden">
+          <div
+            className="h-full bg-primary transition-all"
+            style={{ width: `${weekProgressPct}%` }}
+          />
+        </div>
+        {isDeload && (
+          <p className="mt-3 text-sm text-muted-foreground">
+            <span className="font-display uppercase tracking-widest text-[11px] text-primary">
+              Deload week — recovery in progress.
+            </span>{" "}
+            Sets and weights are dialed back so your body adapts and gets stronger before
+            the next block.
+          </p>
+        )}
+      </div>
+
       <div className="font-display uppercase tracking-[0.3em] text-primary text-sm">
         My Plan
       </div>
