@@ -1,8 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { getMyProfileAndAccess } from "@/lib/profile.functions";
+import { getMyWalkingLogs } from "@/lib/walking-logs.functions";
+import { Footprints } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/")({
   ssr: false,
@@ -15,7 +17,9 @@ function DashboardHome() {
   const navigate = useNavigate();
   const { user, loading } = useSupabaseSession();
   const fetchData = useServerFn(getMyProfileAndAccess);
+  const fetchWalks = useServerFn(getMyWalkingLogs);
   const [data, setData] = useState<Data | null>(null);
+  const [walks, setWalks] = useState<{ logged_date: string; duration_minutes: number }[]>([]);
   const [fetched, setFetched] = useState(false);
 
   useEffect(() => {
@@ -33,7 +37,8 @@ function DashboardHome() {
         }
       })
       .catch(() => setFetched(true));
-  }, [user, fetchData, navigate]);
+    fetchWalks({}).then((w) => setWalks(w as typeof walks)).catch(() => {});
+  }, [user, fetchData, fetchWalks, navigate]);
 
   if (loading || !user || !fetched) {
     return <LoadingState />;
@@ -58,6 +63,21 @@ function DashboardHome() {
     { d: "Sat", label: "Walk", type: "rest" },
     { d: "Sun", label: "Rest", type: "rest" },
   ];
+
+  const walkGoal = data.profile?.weekly_walking_goal_minutes ?? 60;
+  const weekStart = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    const diff = (d.getDay() + 6) % 7;
+    d.setDate(d.getDate() - diff);
+    const tz = d.getTimezoneOffset() * 60000;
+    return new Date(d.getTime() - tz).toISOString().slice(0, 10);
+  }, []);
+  const walkWeekTotal = walks
+    .filter((w) => w.logged_date >= weekStart)
+    .reduce((s, w) => s + w.duration_minutes, 0);
+  const walkPct = walkGoal > 0 ? Math.min(100, Math.round((walkWeekTotal / walkGoal) * 100)) : 0;
+
 
   return (
     <section className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20">
@@ -99,6 +119,26 @@ function DashboardHome() {
           ))}
         </div>
       </div>
+
+      <Link
+        to="/dashboard/walks"
+        className="mt-6 block p-5 rounded-lg border border-border bg-surface hover:border-primary transition-colors"
+      >
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <div className="font-display tracking-widest uppercase text-xs text-muted-foreground flex items-center gap-2">
+              <Footprints className="h-4 w-4" /> Walks this week
+            </div>
+            <div className="mt-2 font-display uppercase text-2xl">
+              {walkWeekTotal} <span className="text-muted-foreground text-base">of {walkGoal} min</span>
+            </div>
+          </div>
+          <div className="font-display uppercase text-2xl text-primary tabular-nums">{walkPct}%</div>
+        </div>
+        <div className="mt-3 h-2 w-full rounded-full bg-background overflow-hidden border border-border">
+          <div className="h-full bg-primary transition-[width] duration-500" style={{ width: `${walkPct}%` }} />
+        </div>
+      </Link>
     </section>
   );
 }

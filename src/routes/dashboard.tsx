@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useNavigate, useRouter, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Dumbbell, LineChart, LogOut, User } from "lucide-react";
+import { LayoutDashboard, Dumbbell, LineChart, LogOut, User, Footprints } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { NotificationsBell } from "@/components/NotificationsBell";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,7 @@ export const Route = createFileRoute("/dashboard")({
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/dashboard/plan", label: "My Plan", icon: Dumbbell },
+  { to: "/dashboard/walks", label: "Walks", icon: Footprints },
   { to: "/dashboard/progress", label: "Progress", icon: LineChart },
   { to: "/dashboard/account", label: "Account", icon: User },
 ] as const;
@@ -73,7 +74,7 @@ function DashboardLayout() {
 
       {/* Mobile bottom nav */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 border-t border-border bg-background/95 backdrop-blur z-50">
-        <div className="grid grid-cols-4">
+        <div className="grid grid-cols-5">
           {navItems.map((n) => {
             const active = pathname === n.to;
             const Icon = n.icon;

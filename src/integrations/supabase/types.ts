@@ -162,6 +162,7 @@ export type Database = {
           onboarding_completed: boolean
           partner_id: string | null
           updated_at: string
+          weekly_walking_goal_minutes: number
         }
         Insert: {
           created_at?: string
@@ -173,6 +174,7 @@ export type Database = {
           onboarding_completed?: boolean
           partner_id?: string | null
           updated_at?: string
+          weekly_walking_goal_minutes?: number
         }
         Update: {
           created_at?: string
@@ -184,6 +186,7 @@ export type Database = {
           onboarding_completed?: boolean
           partner_id?: string | null
           updated_at?: string
+          weekly_walking_goal_minutes?: number
         }
         Relationships: []
       }
@@ -306,6 +309,33 @@ export type Database = {
           review_score?: number | null
           start_date?: string
           status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      walking_logs: {
+        Row: {
+          created_at: string
+          duration_minutes: number
+          id: string
+          logged_date: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_minutes: number
+          id?: string
+          logged_date?: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          logged_date?: string
+          notes?: string | null
           user_id?: string
         }
         Relationships: []
