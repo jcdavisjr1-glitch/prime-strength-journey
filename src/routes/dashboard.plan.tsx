@@ -8,7 +8,12 @@ import {
   logWorkout,
 } from "@/lib/workout-logs.functions";
 import { plans, type Exercise } from "@/lib/plans";
-import { CheckCircle2, X } from "lucide-react";
+import {
+  getMyRecommendations,
+  markRecommendationApplied,
+  type Recommendation,
+} from "@/lib/progression.functions";
+import { CheckCircle2, X, Zap } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/plan")({
   ssr: false,
@@ -24,9 +29,12 @@ function MyPlan() {
   const { user, loading } = useSupabaseSession();
   const fetchData = useServerFn(getMyProfileAndAccess);
   const fetchLatest = useServerFn(getLatestLogsByExercise);
+  const fetchRecs = useServerFn(getMyRecommendations);
+  const markApplied = useServerFn(markRecommendationApplied);
   const submitLog = useServerFn(logWorkout);
   const [data, setData] = useState<Data | null>(null);
   const [latest, setLatest] = useState<LatestLogs>({});
+  const [recs, setRecs] = useState<Record<string, Recommendation>>({});
   const [fetched, setFetched] = useState(false);
   const [activeDay, setActiveDay] = useState<"day1" | "day2">("day1");
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
@@ -50,11 +58,17 @@ function MyPlan() {
     fetchLatest({})
       .then(setLatest)
       .catch(() => {});
-  }, [user, fetchData, fetchLatest, navigate]);
+    fetchRecs({})
+      .then(setRecs)
+      .catch(() => {});
+  }, [user, fetchData, fetchLatest, fetchRecs, navigate]);
 
-  const refreshLatest = () => {
+  const refreshAfterLog = () => {
     fetchLatest({})
       .then(setLatest)
+      .catch(() => {});
+    fetchRecs({})
+      .then(setRecs)
       .catch(() => {});
   };
 
@@ -124,6 +138,7 @@ function MyPlan() {
             index={index}
             completed={!!completed[exercise.name]}
             lastLog={latest[exercise.name]}
+            recommendation={recs[exercise.name]}
             onToggle={() => toggleExercise(exercise.name)}
             onLog={() => setLogging(exercise)}
           />
@@ -138,12 +153,18 @@ function MyPlan() {
       {logging && (
         <LogModal
           exercise={logging}
+          recommendedWeight={recs[logging.name]?.recommended_weight ?? null}
           onClose={() => setLogging(null)}
           onSave={async (payload) => {
             const name = logging.name;
             await submitLog({ data: { exercise_name: name, ...payload } });
+            try {
+              await markApplied({ data: { exercise_name: name } });
+            } catch {
+              /* ignore */
+            }
             setLogging(null);
-            refreshLatest();
+            refreshAfterLog();
             window.dispatchEvent(new CustomEvent("fs:logged", { detail: { name } }));
           }}
         />
@@ -157,6 +178,7 @@ function ExerciseCard({
   index,
   completed,
   lastLog,
+  recommendation,
   onToggle,
   onLog,
 }: {
@@ -170,6 +192,7 @@ function ExerciseCard({
     reps_completed: number | null;
     difficulty: "too_easy" | "just_right" | "too_hard" | null;
   };
+  recommendation?: Recommendation;
   onToggle: () => void;
   onLog: () => void;
 }) {
@@ -239,6 +262,31 @@ function ExerciseCard({
             </div>
           </div>
           <p className="mt-2 text-sm text-muted-foreground">{exercise.note}</p>
+          <div className="mt-3 p-3 rounded-md border border-primary/20 bg-background/60">
+            {recommendation && recommendation.recommended_weight != null ? (
+              <div className="flex items-start gap-2">
+                <Zap className="h-4 w-4 mt-0.5 text-primary shrink-0" fill="currentColor" />
+                <div className="min-w-0">
+                  <div className="font-display uppercase tracking-widest text-[11px] text-muted-foreground">
+                    Today: Try{" "}
+                    <span className="text-primary text-sm">
+                      {Number(recommendation.recommended_weight)} lbs
+                    </span>
+                  </div>
+                  <p className="mt-1 text-sm italic text-foreground/80">
+                    "{recommendation.recommendation_reason}"
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-start gap-2">
+                <Zap className="h-4 w-4 mt-0.5 text-primary shrink-0" fill="currentColor" />
+                <p className="text-sm italic text-muted-foreground">
+                  First time — use a weight that feels challenging but controlled.
+                </p>
+              </div>
+            )}
+          </div>
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
             <div className="text-xs font-display uppercase tracking-widest text-muted-foreground">
               {lastLog && lastLog.weight != null ? (
@@ -274,10 +322,12 @@ function ExerciseCard({
 
 function LogModal({
   exercise,
+  recommendedWeight,
   onClose,
   onSave,
 }: {
   exercise: Exercise;
+  recommendedWeight: number | null;
   onClose: () => void;
   onSave: (payload: {
     weight: number | null;
@@ -287,7 +337,9 @@ function LogModal({
     difficulty: "too_easy" | "just_right" | "too_hard";
   }) => Promise<void>;
 }) {
-  const [weight, setWeight] = useState("");
+  const [weight, setWeight] = useState(
+    recommendedWeight != null ? String(recommendedWeight) : "",
+  );
   const [sets, setSets] = useState(String(exercise.sets));
   const [reps, setReps] = useState(
     typeof exercise.reps === "number" ? String(exercise.reps) : "",
