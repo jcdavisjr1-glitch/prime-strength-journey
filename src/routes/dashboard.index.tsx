@@ -1,8 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { getMyProfileAndAccess } from "@/lib/profile.functions";
+import { getMyWalkingLogs } from "@/lib/walking-logs.functions";
+import { Footprints } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/")({
   ssr: false,
