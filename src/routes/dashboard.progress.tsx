@@ -12,7 +12,8 @@ import {
 } from "recharts";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { getAllLogs } from "@/lib/workout-logs.functions";
-import { Flame } from "lucide-react";
+import { getBlockHistory, type TrainingBlock } from "@/lib/training-blocks.functions";
+import { Flame, ArrowUp, ArrowDown, Minus } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/progress")({
   ssr: false,
