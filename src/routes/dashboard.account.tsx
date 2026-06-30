@@ -154,18 +154,9 @@ function AccountPage() {
         </p>
         <button
           type="button"
-          onClick={async () => {
-            setSyncErr(null);
+          onClick={() => {
             setSyncResult(null);
-            setSyncing(true);
-            try {
-              const r = await runSync();
-              setSyncResult(r);
-            } catch (e) {
-              setSyncErr(e instanceof Error ? e.message : "Sync failed.");
-            } finally {
-              setSyncing(false);
-            }
+            handleRunSync();
           }}
           disabled={syncing}
           className="mt-4 font-display tracking-wider uppercase text-sm px-5 py-2.5 rounded-sm border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-60"
