@@ -122,6 +122,39 @@ export type Database = {
         }
         Relationships: []
       }
+      progression_recommendations: {
+        Row: {
+          applied: boolean
+          based_on_session_date: string
+          exercise_name: string
+          generated_at: string
+          id: string
+          recommendation_reason: string
+          recommended_weight: number | null
+          user_id: string
+        }
+        Insert: {
+          applied?: boolean
+          based_on_session_date: string
+          exercise_name: string
+          generated_at?: string
+          id?: string
+          recommendation_reason: string
+          recommended_weight?: number | null
+          user_id: string
+        }
+        Update: {
+          applied?: boolean
+          based_on_session_date?: string
+          exercise_name?: string
+          generated_at?: string
+          id?: string
+          recommendation_reason?: string
+          recommended_weight?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           cancel_at_period_end: boolean | null
@@ -211,6 +244,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_progression: {
+        Args: { _exercise_name: string; _user_id: string }
+        Returns: undefined
+      }
+      exercise_category: { Args: { _name: string }; Returns: string }
       has_active_subscription: {
         Args: { check_env?: string; user_uuid: string }
         Returns: boolean
