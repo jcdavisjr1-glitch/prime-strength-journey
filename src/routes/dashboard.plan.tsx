@@ -37,9 +37,13 @@ function MyPlan() {
   const fetchRecs = useServerFn(getMyRecommendations);
   const markApplied = useServerFn(markRecommendationApplied);
   const submitLog = useServerFn(logWorkout);
+  const fetchBlock = useServerFn(getActiveBlock);
+  const fetchBlockHistory = useServerFn(getBlockHistory);
   const [data, setData] = useState<Data | null>(null);
   const [latest, setLatest] = useState<LatestLogs>({});
   const [recs, setRecs] = useState<Record<string, Recommendation>>({});
+  const [block, setBlock] = useState<TrainingBlock | null>(null);
+  const [levelUpBanner, setLevelUpBanner] = useState<string | null>(null);
   const [fetched, setFetched] = useState(false);
   const [activeDay, setActiveDay] = useState<"day1" | "day2">("day1");
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
