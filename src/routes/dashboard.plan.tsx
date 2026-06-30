@@ -114,14 +114,48 @@ function MyPlan() {
     ? (equipment as "gym" | "home" | "bodyweight")
     : "gym";
 
-  const plan = plans[safeLevel][safeEquipment];
-  const day = plan[activeDay];
+  const basePlan = plans[safeLevel][safeEquipment];
+  const isDeload = block?.status === "deload";
+  const blockNumber = block?.block_number ?? 1;
+  const weekNumber = block
+    ? Math.min(
+        3,
+        Math.max(
+          1,
+          Math.floor(
+            (Date.now() - new Date(block.start_date).getTime()) /
+              (7 * 24 * 60 * 60 * 1000),
+          ) + 1,
+        ),
+      )
+    : 1;
+  const weekProgressPct = Math.min(100, Math.round((weekNumber / 3) * 100));
+
+  const day = (() => {
+    const d = basePlan[activeDay];
+    if (!isDeload) return d;
+    return {
+      ...d,
+      exercises: d.exercises.map((ex) => ({ ...ex, sets: 2 })),
+    };
+  })();
 
   const toggleExercise = (name: string) =>
     setCompleted((p) => ({ ...p, [name]: !p[name] }));
 
   const completedCount = day.exercises.filter((ex) => completed[ex.name]).length;
   const progress = Math.round((completedCount / day.exercises.length) * 100);
+
+  const dismissLevelUp = () => {
+    if (typeof window === "undefined") return;
+    // Mark all completed level_up blocks as seen
+    fetchBlockHistory({}).then((history) => {
+      history
+        .filter((b) => b.status === "complete" && b.outcome === "level_up")
+        .forEach((b) => window.localStorage.setItem(`fs:levelup-seen:${b.id}`, "1"));
+    });
+    setLevelUpBanner(null);
+  };
 
   return (
     <section className="max-w-4xl mx-auto px-4 md:px-8 py-12 md:py-20">
