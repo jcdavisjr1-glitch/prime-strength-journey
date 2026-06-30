@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      exercise_media: {
+        Row: {
+          equipment: string | null
+          exercise_name: string
+          fetched_at: string
+          id: string
+          instructions: string | null
+          muscle_group: string | null
+          video_url_front: string | null
+          video_url_side: string | null
+        }
+        Insert: {
+          equipment?: string | null
+          exercise_name: string
+          fetched_at?: string
+          id?: string
+          instructions?: string | null
+          muscle_group?: string | null
+          video_url_front?: string | null
+          video_url_side?: string | null
+        }
+        Update: {
+          equipment?: string | null
+          exercise_name?: string
+          fetched_at?: string
+          id?: string
+          instructions?: string | null
+          muscle_group?: string | null
+          video_url_front?: string | null
+          video_url_side?: string | null
+        }
+        Relationships: []
+      }
       exercise_swaps: {
         Row: {
           block_id: string
