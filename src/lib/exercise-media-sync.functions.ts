@@ -192,10 +192,14 @@ export const syncMuscleWikiMedia = createServerFn({ method: "POST" })
 
         result.matched += 1;
         result.upserted += 1;
-      } catch (e) {
-        result.errors.push({ name, error: e instanceof Error ? e.message : String(e) });
+        } catch (e) {
+          result.errors.push({ name, error: e instanceof Error ? e.message : String(e) });
+        }
       }
-    }
 
-    return result;
+      return result;
+    } catch (e) {
+      result.errors.push({ name: "*", error: e instanceof Error ? e.message : String(e) });
+      return result;
+    }
   });
