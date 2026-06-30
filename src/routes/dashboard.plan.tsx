@@ -178,6 +178,7 @@ function ExerciseCard({
   index,
   completed,
   lastLog,
+  recommendation,
   onToggle,
   onLog,
 }: {
@@ -191,6 +192,7 @@ function ExerciseCard({
     reps_completed: number | null;
     difficulty: "too_easy" | "just_right" | "too_hard" | null;
   };
+  recommendation?: Recommendation;
   onToggle: () => void;
   onLog: () => void;
 }) {
