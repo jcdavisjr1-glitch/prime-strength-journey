@@ -40,6 +40,15 @@ function DashboardHome() {
     fetchWalks({}).then((w) => setWalks(w as typeof walks)).catch(() => {});
   }, [user, fetchData, fetchWalks, navigate]);
 
+  const weekStart = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    const diff = (d.getDay() + 6) % 7;
+    d.setDate(d.getDate() - diff);
+    const tz = d.getTimezoneOffset() * 60000;
+    return new Date(d.getTime() - tz).toISOString().slice(0, 10);
+  }, []);
+
   if (loading || !user || !fetched) {
     return <LoadingState />;
   }
@@ -65,18 +74,11 @@ function DashboardHome() {
   ];
 
   const walkGoal = data.profile?.weekly_walking_goal_minutes ?? 60;
-  const weekStart = useMemo(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    const diff = (d.getDay() + 6) % 7;
-    d.setDate(d.getDate() - diff);
-    const tz = d.getTimezoneOffset() * 60000;
-    return new Date(d.getTime() - tz).toISOString().slice(0, 10);
-  }, []);
   const walkWeekTotal = walks
     .filter((w) => w.logged_date >= weekStart)
     .reduce((s, w) => s + w.duration_minutes, 0);
   const walkPct = walkGoal > 0 ? Math.min(100, Math.round((walkWeekTotal / walkGoal) * 100)) : 0;
+
 
 
   return (
