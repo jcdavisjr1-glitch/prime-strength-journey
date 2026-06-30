@@ -172,28 +172,34 @@ export type Database = {
       }
       workout_logs: {
         Row: {
+          difficulty: string | null
           exercise_name: string
           id: string
           logged_at: string
           reps: number | null
+          reps_completed: number | null
           sets: number | null
           user_id: string
           weight: number | null
         }
         Insert: {
+          difficulty?: string | null
           exercise_name: string
           id?: string
           logged_at?: string
           reps?: number | null
+          reps_completed?: number | null
           sets?: number | null
           user_id: string
           weight?: number | null
         }
         Update: {
+          difficulty?: string | null
           exercise_name?: string
           id?: string
           logged_at?: string
           reps?: number | null
+          reps_completed?: number | null
           sets?: number | null
           user_id?: string
           weight?: number | null
