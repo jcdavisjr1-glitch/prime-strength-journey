@@ -161,33 +161,65 @@ function AccountPage() {
         </button>
         {syncErr && <div className="mt-3 text-sm text-destructive">{syncErr}</div>}
         {syncResult && (
-          <div className="mt-4 text-sm space-y-2">
-            <div>
-              <span className="text-muted-foreground">Matched: </span>
-              <span className="font-display">{syncResult.matched}</span>
-              <span className="text-muted-foreground"> / {syncResult.total}</span>
+          <div className="mt-5 space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <StatTile label="Total" value={syncResult.total} />
+              <StatTile label="Matched" value={syncResult.matched} accent />
+              <StatTile label="Saved" value={syncResult.upserted} accent />
+              <StatTile label="Unmatched" value={syncResult.unmatched.length} />
             </div>
+
+            <div className="flex flex-wrap gap-2 font-display tracking-widest uppercase text-[10px]">
+              <span className="px-2 py-1 rounded-sm bg-primary/10 text-primary border border-primary/40">
+                {syncResult.total > 0
+                  ? Math.round((syncResult.matched / syncResult.total) * 100)
+                  : 0}
+                % matched
+              </span>
+              <span className="px-2 py-1 rounded-sm bg-destructive/10 text-destructive border border-destructive/40">
+                {syncResult.errors.length} error{syncResult.errors.length === 1 ? "" : "s"}
+              </span>
+            </div>
+
             {syncResult.unmatched.length > 0 && (
-              <div>
-                <div className="text-muted-foreground">No good match:</div>
-                <ul className="mt-1 list-disc list-inside text-xs text-muted-foreground">
+              <details className="rounded-sm border border-border bg-background/50" open>
+                <summary className="cursor-pointer px-4 py-2 font-display tracking-widest uppercase text-xs text-muted-foreground">
+                  No good match ({syncResult.unmatched.length})
+                </summary>
+                <ul className="px-4 pb-3 max-h-64 overflow-auto text-xs text-muted-foreground space-y-1">
                   {syncResult.unmatched.map((n) => (
-                    <li key={n}>{n}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {syncResult.errors.length > 0 && (
-              <div>
-                <div className="text-destructive">Errors:</div>
-                <ul className="mt-1 list-disc list-inside text-xs text-destructive">
-                  {syncResult.errors.map((e) => (
-                    <li key={e.name}>
-                      {e.name} — {e.error}
+                    <li key={n} className="font-mono">
+                      {n}
                     </li>
                   ))}
                 </ul>
-              </div>
+              </details>
+            )}
+
+            {syncResult.errors.length > 0 && (
+              <details
+                className="rounded-sm border border-destructive/40 bg-destructive/5"
+                open
+              >
+                <summary className="cursor-pointer px-4 py-2 font-display tracking-widest uppercase text-xs text-destructive">
+                  Errors ({syncResult.errors.length})
+                </summary>
+                <ul className="px-4 pb-3 max-h-80 overflow-auto text-xs space-y-2">
+                  {syncResult.errors.map((e, i) => (
+                    <li
+                      key={`${e.name}-${i}`}
+                      className="border-l-2 border-destructive/60 pl-3"
+                    >
+                      <div className="font-display uppercase tracking-wider text-foreground">
+                        {e.name}
+                      </div>
+                      <div className="font-mono text-destructive break-all">
+                        {e.error}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </details>
             )}
           </div>
         )}
@@ -211,6 +243,35 @@ function Field({ label, value }: { label: string; value: string }) {
         {label}
       </div>
       <div className="mt-2 text-lg">{value}</div>
+    </div>
+  );
+}
+
+function StatTile({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: number;
+  accent?: boolean;
+}) {
+  return (
+    <div
+      className={`p-4 rounded-sm border ${
+        accent ? "border-primary/40 bg-primary/10" : "border-border bg-background/50"
+      }`}
+    >
+      <div className="font-display tracking-widest uppercase text-[10px] text-muted-foreground">
+        {label}
+      </div>
+      <div
+        className={`mt-1 font-display text-3xl tabular-nums ${
+          accent ? "text-primary" : "text-foreground"
+        }`}
+      >
+        {value}
+      </div>
     </div>
   );
 }
