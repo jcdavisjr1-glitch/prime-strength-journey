@@ -130,6 +130,70 @@ function AccountPage() {
         {goalMsg && <div className="mt-3 text-sm text-muted-foreground">{goalMsg}</div>}
       </form>
 
+      <div className="mt-8 p-5 bg-surface border border-border rounded-lg">
+        <div className="font-display tracking-widest uppercase text-xs text-muted-foreground">
+          Exercise media sync
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Fetches demonstration videos from MuscleWiki for every exercise in the plan
+          library and caches them. Run this manually — not on every page load — to stay
+          within the API rate limit.
+        </p>
+        <button
+          type="button"
+          onClick={async () => {
+            setSyncErr(null);
+            setSyncResult(null);
+            setSyncing(true);
+            try {
+              const r = await runSync();
+              setSyncResult(r);
+            } catch (e) {
+              setSyncErr(e instanceof Error ? e.message : "Sync failed.");
+            } finally {
+              setSyncing(false);
+            }
+          }}
+          disabled={syncing}
+          className="mt-4 font-display tracking-wider uppercase text-sm px-5 py-2.5 rounded-sm border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-60"
+        >
+          {syncing ? "Syncing…" : "Sync exercise videos"}
+        </button>
+        {syncErr && <div className="mt-3 text-sm text-destructive">{syncErr}</div>}
+        {syncResult && (
+          <div className="mt-4 text-sm space-y-2">
+            <div>
+              <span className="text-muted-foreground">Matched: </span>
+              <span className="font-display">{syncResult.matched}</span>
+              <span className="text-muted-foreground"> / {syncResult.total}</span>
+            </div>
+            {syncResult.unmatched.length > 0 && (
+              <div>
+                <div className="text-muted-foreground">No good match:</div>
+                <ul className="mt-1 list-disc list-inside text-xs text-muted-foreground">
+                  {syncResult.unmatched.map((n) => (
+                    <li key={n}>{n}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {syncResult.errors.length > 0 && (
+              <div>
+                <div className="text-destructive">Errors:</div>
+                <ul className="mt-1 list-disc list-inside text-xs text-destructive">
+                  {syncResult.errors.map((e) => (
+                    <li key={e.name}>
+                      {e.name} — {e.error}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+
       <button
         onClick={signOut}
         className="mt-12 font-display tracking-wider uppercase text-base px-8 py-4 rounded-sm border border-border hover:border-primary hover:text-primary transition-colors"
