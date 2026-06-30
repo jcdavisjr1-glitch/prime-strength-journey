@@ -17,7 +17,9 @@ function DashboardHome() {
   const navigate = useNavigate();
   const { user, loading } = useSupabaseSession();
   const fetchData = useServerFn(getMyProfileAndAccess);
+  const fetchWalks = useServerFn(getMyWalkingLogs);
   const [data, setData] = useState<Data | null>(null);
+  const [walks, setWalks] = useState<{ logged_date: string; duration_minutes: number }[]>([]);
   const [fetched, setFetched] = useState(false);
 
   useEffect(() => {
@@ -35,7 +37,8 @@ function DashboardHome() {
         }
       })
       .catch(() => setFetched(true));
-  }, [user, fetchData, navigate]);
+    fetchWalks({}).then((w) => setWalks(w as typeof walks)).catch(() => {});
+  }, [user, fetchData, fetchWalks, navigate]);
 
   if (loading || !user || !fetched) {
     return <LoadingState />;
