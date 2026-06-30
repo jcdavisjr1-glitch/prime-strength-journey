@@ -322,10 +322,12 @@ function ExerciseCard({
 
 function LogModal({
   exercise,
+  recommendedWeight,
   onClose,
   onSave,
 }: {
   exercise: Exercise;
+  recommendedWeight: number | null;
   onClose: () => void;
   onSave: (payload: {
     weight: number | null;
@@ -335,7 +337,9 @@ function LogModal({
     difficulty: "too_easy" | "just_right" | "too_hard";
   }) => Promise<void>;
 }) {
-  const [weight, setWeight] = useState("");
+  const [weight, setWeight] = useState(
+    recommendedWeight != null ? String(recommendedWeight) : "",
+  );
   const [sets, setSets] = useState(String(exercise.sets));
   const [reps, setReps] = useState(
     typeof exercise.reps === "number" ? String(exercise.reps) : "",
