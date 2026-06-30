@@ -161,10 +161,42 @@ function ExerciseCard({
   exercise: Exercise;
   index: number;
   completed: boolean;
-  lastLog?: { weight: number | null; sets: number | null; reps: number | null };
+  lastLog?: {
+    weight: number | null;
+    sets: number | null;
+    reps: number | null;
+    reps_completed: number | null;
+    difficulty: "too_easy" | "just_right" | "too_hard" | null;
+  };
   onToggle: () => void;
   onLog: () => void;
 }) {
+  const [justLogged, setJustLogged] = useState(false);
+  const handleLog = () => {
+    onLog();
+  };
+  // Expose a way for parent to flash "Logged ✓" — using a custom event hook
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const ce = e as CustomEvent<{ name: string }>;
+      if (ce.detail?.name === exercise.name) {
+        setJustLogged(true);
+        setTimeout(() => setJustLogged(false), 2000);
+      }
+    };
+    window.addEventListener("fs:logged", handler);
+    return () => window.removeEventListener("fs:logged", handler);
+  }, [exercise.name]);
+
+  const difficultyEmoji =
+    lastLog?.difficulty === "too_easy"
+      ? "😤"
+      : lastLog?.difficulty === "too_hard"
+        ? "😮‍💨"
+        : lastLog?.difficulty === "just_right"
+          ? "💪"
+          : null;
+
   return (
     <div
       className={`group p-4 md:p-5 rounded-lg border transition-all ${
@@ -207,16 +239,30 @@ function ExerciseCard({
           <p className="mt-2 text-sm text-muted-foreground">{exercise.note}</p>
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
             <div className="text-xs font-display uppercase tracking-widest text-muted-foreground">
-              {lastLog && lastLog.weight != null
-                ? <>Last time: <span className="text-foreground">{lastLog.weight} lbs</span></>
-                : <span className="opacity-60">No history yet</span>}
+              {lastLog && lastLog.weight != null ? (
+                <>
+                  Last session:{" "}
+                  <span className="text-foreground">
+                    {lastLog.weight} lbs × {lastLog.reps_completed ?? lastLog.reps ?? "—"} reps
+                  </span>
+                  {difficultyEmoji && <span className="ml-2 text-base">— {difficultyEmoji}</span>}
+                </>
+              ) : (
+                <span className="opacity-60">First time — give it your best</span>
+              )}
             </div>
-            <button
-              onClick={onLog}
-              className="px-3 py-1.5 text-xs font-display uppercase tracking-widest border border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground transition-colors rounded"
-            >
-              Log this
-            </button>
+            {justLogged ? (
+              <span className="px-3 py-1.5 text-xs font-display uppercase tracking-widest text-green-500 border border-green-500/50 rounded">
+                Logged ✓
+              </span>
+            ) : (
+              <button
+                onClick={handleLog}
+                className="px-3 py-1.5 text-xs font-display uppercase tracking-widest border border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground transition-colors rounded"
+              >
+                Log this
+              </button>
+            )}
           </div>
         </div>
       </div>
