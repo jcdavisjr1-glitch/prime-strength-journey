@@ -34,18 +34,7 @@ function ExerciseDemoModal({
   onClose: () => void;
 }) {
   const media = getExerciseMedia(exerciseName);
-  const [frame, setFrame] = useState(0);
 
-  // Alternate the two frames to mimic motion
-  useEffect(() => {
-    if (!media || media.imageUrls.length < 2) return;
-    const id = setInterval(() => {
-      setFrame((f) => (f + 1) % media.imageUrls.length);
-    }, 700);
-    return () => clearInterval(id);
-  }, [media]);
-
-  // Close on Escape
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -74,17 +63,11 @@ function ExerciseDemoModal({
           <X className="h-4 w-4" />
         </button>
         <div className="relative w-full aspect-square bg-black flex items-center justify-center">
-          {media.imageUrls.map((url, i) => (
-            <img
-              key={url}
-              src={url}
-              alt={`${exerciseName} — step ${i + 1}`}
-              loading="lazy"
-              className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
-                i === frame ? "opacity-100" : "opacity-0"
-              }`}
-            />
-          ))}
+          <img
+            src={media.gifUrl}
+            alt={`${exerciseName} demonstration`}
+            className="w-full h-full object-contain"
+          />
         </div>
         <div className="p-4 border-t border-border">
           <div className="font-display uppercase tracking-[0.3em] text-primary text-[10px]">
