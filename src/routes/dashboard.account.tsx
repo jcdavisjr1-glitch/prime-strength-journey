@@ -19,10 +19,14 @@ function AccountPage() {
   const { user, loading } = useSupabaseSession();
   const fetchData = useServerFn(getMyProfileAndAccess);
   const saveGoal = useServerFn(updateWalkingGoal);
+  const runSync = useServerFn(syncMuscleWikiMedia);
   const [data, setData] = useState<Awaited<ReturnType<typeof getMyProfileAndAccess>> | null>(null);
   const [goal, setGoal] = useState<string>("60");
   const [savingGoal, setSavingGoal] = useState(false);
   const [goalMsg, setGoalMsg] = useState<string | null>(null);
+  const [syncing, setSyncing] = useState(false);
+  const [syncResult, setSyncResult] = useState<SyncResult | null>(null);
+  const [syncErr, setSyncErr] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
