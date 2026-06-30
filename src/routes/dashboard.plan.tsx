@@ -70,7 +70,24 @@ function MyPlan() {
     fetchRecs({})
       .then(setRecs)
       .catch(() => {});
-  }, [user, fetchData, fetchLatest, fetchRecs, navigate]);
+    fetchBlock({})
+      .then(setBlock)
+      .catch(() => {});
+    fetchBlockHistory({})
+      .then((history) => {
+        const lastUp = [...history]
+          .reverse()
+          .find((b) => b.status === "complete" && b.outcome === "level_up");
+        if (lastUp) {
+          const seenKey = `fs:levelup-seen:${lastUp.id}`;
+          if (typeof window !== "undefined" && !window.localStorage.getItem(seenKey)) {
+            const currentLevel = history.find((b) => b.status === "active" || b.status === "deload");
+            setLevelUpBanner(currentLevel?.fitness_level ?? lastUp.fitness_level);
+          }
+        }
+      })
+      .catch(() => {});
+  }, [user, fetchData, fetchLatest, fetchRecs, fetchBlock, fetchBlockHistory, navigate]);
 
   const refreshAfterLog = () => {
     fetchLatest({})
