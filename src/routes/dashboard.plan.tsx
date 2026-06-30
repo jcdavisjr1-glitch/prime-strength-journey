@@ -19,6 +19,7 @@ import {
   type TrainingBlock,
 } from "@/lib/training-blocks.functions";
 import { CheckCircle2, X, Zap, Trophy } from "lucide-react";
+import { WatchFormButton } from "@/components/WatchFormButton";
 
 export const Route = createFileRoute("/dashboard/plan")({
   ssr: false,
@@ -356,13 +357,16 @@ function ExerciseCard({
         </button>
         <div className="flex-1 min-w-0">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-1">
-            <h3
-              className={`font-display uppercase text-lg ${
-                completed ? "text-muted-foreground line-through" : "text-foreground"
-              }`}
-            >
-              {index + 1}. {exercise.name}
-            </h3>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3
+                className={`font-display uppercase text-lg ${
+                  completed ? "text-muted-foreground line-through" : "text-foreground"
+                }`}
+              >
+                {index + 1}. {exercise.name}
+              </h3>
+              <WatchFormButton exerciseName={exercise.name} />
+            </div>
             <div className="flex flex-wrap items-center gap-2 font-display uppercase text-xs tracking-wider text-muted-foreground">
               <span className="px-2 py-1 bg-background rounded border border-border">
                 {exercise.sets} sets
