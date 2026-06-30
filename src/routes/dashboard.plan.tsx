@@ -140,9 +140,11 @@ function MyPlan() {
           exercise={logging}
           onClose={() => setLogging(null)}
           onSave={async (payload) => {
-            await submitLog({ data: { exercise_name: logging.name, ...payload } });
+            const name = logging.name;
+            await submitLog({ data: { exercise_name: name, ...payload } });
             setLogging(null);
             refreshLatest();
+            window.dispatchEvent(new CustomEvent("fs:logged", { detail: { name } }));
           }}
         />
       )}
@@ -161,10 +163,42 @@ function ExerciseCard({
   exercise: Exercise;
   index: number;
   completed: boolean;
-  lastLog?: { weight: number | null; sets: number | null; reps: number | null };
+  lastLog?: {
+    weight: number | null;
+    sets: number | null;
+    reps: number | null;
+    reps_completed: number | null;
+    difficulty: "too_easy" | "just_right" | "too_hard" | null;
+  };
   onToggle: () => void;
   onLog: () => void;
 }) {
+  const [justLogged, setJustLogged] = useState(false);
+  const handleLog = () => {
+    onLog();
+  };
+  // Expose a way for parent to flash "Logged ✓" — using a custom event hook
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const ce = e as CustomEvent<{ name: string }>;
+      if (ce.detail?.name === exercise.name) {
+        setJustLogged(true);
+        setTimeout(() => setJustLogged(false), 2000);
+      }
+    };
+    window.addEventListener("fs:logged", handler);
+    return () => window.removeEventListener("fs:logged", handler);
+  }, [exercise.name]);
+
+  const difficultyEmoji =
+    lastLog?.difficulty === "too_easy"
+      ? "😤"
+      : lastLog?.difficulty === "too_hard"
+        ? "😮‍💨"
+        : lastLog?.difficulty === "just_right"
+          ? "💪"
+          : null;
+
   return (
     <div
       className={`group p-4 md:p-5 rounded-lg border transition-all ${
@@ -207,16 +241,30 @@ function ExerciseCard({
           <p className="mt-2 text-sm text-muted-foreground">{exercise.note}</p>
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
             <div className="text-xs font-display uppercase tracking-widest text-muted-foreground">
-              {lastLog && lastLog.weight != null
-                ? <>Last time: <span className="text-foreground">{lastLog.weight} lbs</span></>
-                : <span className="opacity-60">No history yet</span>}
+              {lastLog && lastLog.weight != null ? (
+                <>
+                  Last session:{" "}
+                  <span className="text-foreground">
+                    {lastLog.weight} lbs × {lastLog.reps_completed ?? lastLog.reps ?? "—"} reps
+                  </span>
+                  {difficultyEmoji && <span className="ml-2 text-base">— {difficultyEmoji}</span>}
+                </>
+              ) : (
+                <span className="opacity-60">First time — give it your best</span>
+              )}
             </div>
-            <button
-              onClick={onLog}
-              className="px-3 py-1.5 text-xs font-display uppercase tracking-widest border border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground transition-colors rounded"
-            >
-              Log this
-            </button>
+            {justLogged ? (
+              <span className="px-3 py-1.5 text-xs font-display uppercase tracking-widest text-green-500 border border-green-500/50 rounded">
+                Logged ✓
+              </span>
+            ) : (
+              <button
+                onClick={handleLog}
+                className="px-3 py-1.5 text-xs font-display uppercase tracking-widest border border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground transition-colors rounded"
+              >
+                Log this
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -231,18 +279,31 @@ function LogModal({
 }: {
   exercise: Exercise;
   onClose: () => void;
-  onSave: (payload: { weight: number | null; sets: number | null; reps: number | null }) => Promise<void>;
+  onSave: (payload: {
+    weight: number | null;
+    sets: number | null;
+    reps: number | null;
+    reps_completed: number | null;
+    difficulty: "too_easy" | "just_right" | "too_hard";
+  }) => Promise<void>;
 }) {
   const [weight, setWeight] = useState("");
   const [sets, setSets] = useState(String(exercise.sets));
   const [reps, setReps] = useState(
     typeof exercise.reps === "number" ? String(exercise.reps) : "",
   );
+  const [repsCompleted, setRepsCompleted] = useState(
+    typeof exercise.reps === "number" ? String(exercise.reps) : "",
+  );
+  const [difficulty, setDifficulty] = useState<
+    "too_easy" | "just_right" | "too_hard" | null
+  >("just_right");
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!difficulty) return;
     setSaving(true);
     setErr(null);
     try {
@@ -250,6 +311,8 @@ function LogModal({
         weight: weight ? Number(weight) : null,
         sets: sets ? parseInt(sets, 10) : null,
         reps: reps ? parseInt(reps, 10) : null,
+        reps_completed: repsCompleted ? parseInt(repsCompleted, 10) : null,
+        difficulty,
       });
     } catch (e) {
       setErr((e as Error).message);
@@ -257,11 +320,21 @@ function LogModal({
     }
   };
 
+  const diffOptions: {
+    value: "too_easy" | "just_right" | "too_hard";
+    emoji: string;
+    label: string;
+  }[] = [
+    { value: "too_easy", emoji: "😤", label: "Too Easy" },
+    { value: "just_right", emoji: "💪", label: "Just Right" },
+    { value: "too_hard", emoji: "😮‍💨", label: "Too Hard" },
+  ];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md bg-surface border border-border rounded-lg p-6 relative"
+        className="w-full max-w-md bg-surface border border-border rounded-lg p-6 relative max-h-[90vh] overflow-y-auto"
       >
         <button
           onClick={onClose}
@@ -278,10 +351,42 @@ function LogModal({
             <Field label="Sets completed" value={sets} onChange={setSets} type="number" />
             <Field label="Reps completed" value={reps} onChange={setReps} type="number" />
           </div>
+          <Field
+            label="Reps you actually completed"
+            value={repsCompleted}
+            onChange={setRepsCompleted}
+            type="number"
+            placeholder="What you actually did"
+          />
+          <div>
+            <span className="block font-display uppercase tracking-widest text-[10px] text-muted-foreground mb-2">
+              How did it feel?
+            </span>
+            <div className="grid grid-cols-3 gap-2">
+              {diffOptions.map((opt) => {
+                const active = difficulty === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setDifficulty(opt.value)}
+                    className={`flex flex-col items-center justify-center gap-1 py-4 px-2 rounded-md border-2 transition-all font-display uppercase tracking-wider text-[11px] ${
+                      active
+                        ? "bg-primary border-primary text-primary-foreground shadow-[var(--shadow-red)]"
+                        : "bg-background border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                    }`}
+                  >
+                    <span className="text-2xl leading-none">{opt.emoji}</span>
+                    <span>{opt.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
           {err && <p className="text-sm text-primary">{err}</p>}
           <button
             type="submit"
-            disabled={saving}
+            disabled={saving || !difficulty}
             className="w-full py-3 font-display uppercase tracking-widest text-sm bg-primary text-primary-foreground hover:bg-primary-glow rounded disabled:opacity-50"
           >
             {saving ? "Saving…" : "Save log"}
