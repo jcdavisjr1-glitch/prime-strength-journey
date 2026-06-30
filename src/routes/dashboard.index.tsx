@@ -62,7 +62,20 @@ function DashboardHome() {
     { d: "Fri", label: "Rest", type: "rest" },
     { d: "Sat", label: "Walk", type: "rest" },
     { d: "Sun", label: "Rest", type: "rest" },
-  ];
+  const walkGoal = data.profile?.weekly_walking_goal_minutes ?? 60;
+  const weekStart = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    const diff = (d.getDay() + 6) % 7;
+    d.setDate(d.getDate() - diff);
+    const tz = d.getTimezoneOffset() * 60000;
+    return new Date(d.getTime() - tz).toISOString().slice(0, 10);
+  }, []);
+  const walkWeekTotal = walks
+    .filter((w) => w.logged_date >= weekStart)
+    .reduce((s, w) => s + w.duration_minutes, 0);
+  const walkPct = walkGoal > 0 ? Math.min(100, Math.round((walkWeekTotal / walkGoal) * 100)) : 0;
+
 
   return (
     <section className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20">
