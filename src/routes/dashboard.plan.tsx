@@ -396,6 +396,8 @@ function LogModal({
     </div>
   );
 }
+
+function Field({
   label,
   value,
   onChange,
