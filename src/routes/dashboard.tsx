@@ -74,7 +74,7 @@ function DashboardLayout() {
 
       {/* Mobile bottom nav */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 border-t border-border bg-background/95 backdrop-blur z-50">
-        <div className="grid grid-cols-4">
+        <div className="grid grid-cols-5">
           {navItems.map((n) => {
             const active = pathname === n.to;
             const Icon = n.icon;
