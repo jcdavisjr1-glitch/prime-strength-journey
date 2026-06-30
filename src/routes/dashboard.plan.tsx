@@ -262,6 +262,31 @@ function ExerciseCard({
             </div>
           </div>
           <p className="mt-2 text-sm text-muted-foreground">{exercise.note}</p>
+          <div className="mt-3 p-3 rounded-md border border-primary/20 bg-background/60">
+            {recommendation && recommendation.recommended_weight != null ? (
+              <div className="flex items-start gap-2">
+                <Zap className="h-4 w-4 mt-0.5 text-primary shrink-0" fill="currentColor" />
+                <div className="min-w-0">
+                  <div className="font-display uppercase tracking-widest text-[11px] text-muted-foreground">
+                    Today: Try{" "}
+                    <span className="text-primary text-sm">
+                      {Number(recommendation.recommended_weight)} lbs
+                    </span>
+                  </div>
+                  <p className="mt-1 text-sm italic text-foreground/80">
+                    "{recommendation.recommendation_reason}"
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-start gap-2">
+                <Zap className="h-4 w-4 mt-0.5 text-primary shrink-0" fill="currentColor" />
+                <p className="text-sm italic text-muted-foreground">
+                  First time — use a weight that feels challenging but controlled.
+                </p>
+              </div>
+            )}
+          </div>
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
             <div className="text-xs font-display uppercase tracking-widest text-muted-foreground">
               {lastLog && lastLog.weight != null ? (
