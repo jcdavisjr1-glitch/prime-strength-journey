@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { X, Play } from "lucide-react";
-import { getExerciseMedia, hasExerciseMedia } from "@/lib/exercise-media";
 import {
   listExerciseMedia,
   type ExerciseMediaRow,
@@ -41,9 +40,8 @@ function useDbMedia(name: string): ExerciseMediaRow | null {
 export function WatchFormButton({ exerciseName }: { exerciseName: string }) {
   const [open, setOpen] = useState(false);
   const dbRow = useDbMedia(exerciseName);
-  const hasDbVideo = !!(dbRow && (dbRow.video_url_front || dbRow.video_url_side));
-  const hasLocal = hasExerciseMedia(exerciseName);
-  if (!hasDbVideo && !hasLocal) return null;
+  const videoUrl = dbRow?.video_url_front || dbRow?.video_url_side || null;
+  if (!videoUrl) return null;
   return (
     <>
       <button
@@ -61,7 +59,8 @@ export function WatchFormButton({ exerciseName }: { exerciseName: string }) {
       {open && (
         <ExerciseDemoModal
           exerciseName={exerciseName}
-          dbRow={hasDbVideo ? dbRow : null}
+          dbRow={dbRow!}
+          videoUrl={videoUrl}
           onClose={() => setOpen(false)}
         />
       )}
@@ -72,14 +71,14 @@ export function WatchFormButton({ exerciseName }: { exerciseName: string }) {
 function ExerciseDemoModal({
   exerciseName,
   dbRow,
+  videoUrl,
   onClose,
 }: {
   exerciseName: string;
-  dbRow: ExerciseMediaRow | null;
+  dbRow: ExerciseMediaRow;
+  videoUrl: string;
   onClose: () => void;
 }) {
-  const local = getExerciseMedia(exerciseName);
-
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -88,13 +87,7 @@ function ExerciseDemoModal({
     return () => window.removeEventListener("keydown", handler);
   }, [onClose]);
 
-  const videoUrl = dbRow?.video_url_front || dbRow?.video_url_side || null;
-  const excerpt =
-    (dbRow?.instructions ?? "").split(/\n|\.\s/)[0]?.trim() ||
-    local?.instructions[0] ||
-    "";
-
-  if (!videoUrl && !local) return null;
+  const excerpt = (dbRow.instructions ?? "").split(/\n|\.\s/)[0]?.trim() || "";
 
   return (
     <div
@@ -113,23 +106,15 @@ function ExerciseDemoModal({
           <X className="h-4 w-4" />
         </button>
         <div className="relative w-full aspect-square bg-black flex items-center justify-center">
-          {videoUrl ? (
-            <video
-              src={videoUrl}
-              autoPlay
-              loop
-              muted
-              playsInline
-              controls
-              className="w-full h-full object-contain"
-            />
-          ) : (
-            <img
-              src={local!.gifUrl}
-              alt={`${exerciseName} demonstration`}
-              className="w-full h-full object-contain"
-            />
-          )}
+          <video
+            src={videoUrl}
+            autoPlay
+            loop
+            muted
+            playsInline
+            controls
+            className="w-full h-full object-contain"
+          />
         </div>
         <div className="p-4 border-t border-border">
           <div className="font-display uppercase tracking-[0.3em] text-primary text-[10px]">
@@ -141,14 +126,14 @@ function ExerciseDemoModal({
           {excerpt && (
             <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{excerpt}</p>
           )}
-          {(dbRow?.muscle_group || dbRow?.equipment) && (
+          {(dbRow.muscle_group || dbRow.equipment) && (
             <div className="mt-3 flex flex-wrap gap-2">
-              {dbRow?.muscle_group && (
+              {dbRow.muscle_group && (
                 <span className="px-2 py-0.5 text-[10px] font-display uppercase tracking-widest border border-border rounded">
                   {dbRow.muscle_group}
                 </span>
               )}
-              {dbRow?.equipment && (
+              {dbRow.equipment && (
                 <span className="px-2 py-0.5 text-[10px] font-display uppercase tracking-widest border border-border rounded">
                   {dbRow.equipment}
                 </span>
@@ -160,3 +145,4 @@ function ExerciseDemoModal({
     </div>
   );
 }
+
