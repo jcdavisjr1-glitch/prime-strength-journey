@@ -119,7 +119,8 @@ export const syncMuscleWikiMedia = createServerFn({ method: "POST" })
         });
 
         if (!res.ok) {
-          result.errors.push({ name, error: `HTTP ${res.status}` });
+          const body = await res.text().catch(() => "");
+          result.errors.push({ name, error: `HTTP ${res.status} ${body.slice(0, 200)}` });
           continue;
         }
 
