@@ -29,9 +29,12 @@ function MyPlan() {
   const { user, loading } = useSupabaseSession();
   const fetchData = useServerFn(getMyProfileAndAccess);
   const fetchLatest = useServerFn(getLatestLogsByExercise);
+  const fetchRecs = useServerFn(getMyRecommendations);
+  const markApplied = useServerFn(markRecommendationApplied);
   const submitLog = useServerFn(logWorkout);
   const [data, setData] = useState<Data | null>(null);
   const [latest, setLatest] = useState<LatestLogs>({});
+  const [recs, setRecs] = useState<Record<string, Recommendation>>({});
   const [fetched, setFetched] = useState(false);
   const [activeDay, setActiveDay] = useState<"day1" | "day2">("day1");
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
@@ -55,11 +58,17 @@ function MyPlan() {
     fetchLatest({})
       .then(setLatest)
       .catch(() => {});
-  }, [user, fetchData, fetchLatest, navigate]);
+    fetchRecs({})
+      .then(setRecs)
+      .catch(() => {});
+  }, [user, fetchData, fetchLatest, fetchRecs, navigate]);
 
-  const refreshLatest = () => {
+  const refreshAfterLog = () => {
     fetchLatest({})
       .then(setLatest)
+      .catch(() => {});
+    fetchRecs({})
+      .then(setRecs)
       .catch(() => {});
   };
 
