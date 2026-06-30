@@ -62,6 +62,8 @@ function DashboardHome() {
     { d: "Fri", label: "Rest", type: "rest" },
     { d: "Sat", label: "Walk", type: "rest" },
     { d: "Sun", label: "Rest", type: "rest" },
+  ];
+
   const walkGoal = data.profile?.weekly_walking_goal_minutes ?? 60;
   const weekStart = useMemo(() => {
     const d = new Date();
