@@ -196,7 +196,7 @@ function AccountPage() {
 
             <button
               type="button"
-              onClick={handleRunSync}
+              onClick={() => handleRunSync({ onlyMissing: true })}
               disabled={syncing}
               className="font-display tracking-wider uppercase text-xs px-4 py-2 rounded-sm border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-60"
             >
