@@ -19,6 +19,7 @@ import { Route as DashboardProgressRouteImport } from './routes/dashboard.progre
 import { Route as DashboardPlanRouteImport } from './routes/dashboard.plan'
 import { Route as DashboardAccountRouteImport } from './routes/dashboard.account'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -71,6 +72,11 @@ const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   path: '/checkout/return',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/progress': typeof DashboardProgressRoute
   '/dashboard/walks': typeof DashboardWalksRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/dashboard/progress': typeof DashboardProgressRoute
   '/dashboard/walks': typeof DashboardWalksRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   '/dashboard/progress': typeof DashboardProgressRoute
   '/dashboard/walks': typeof DashboardWalksRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
     | '/dashboard/progress'
     | '/dashboard/walks'
     | '/dashboard/'
+    | '/.lovable/oauth/consent'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
     | '/dashboard/progress'
     | '/dashboard/walks'
     | '/dashboard'
+    | '/.lovable/oauth/consent'
     | '/api/public/payments/webhook'
   id:
     | '__root__'
@@ -155,6 +166,7 @@ export interface FileRouteTypes {
     | '/dashboard/progress'
     | '/dashboard/walks'
     | '/dashboard/'
+    | '/.lovable/oauth/consent'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -164,6 +176,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
@@ -239,6 +252,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutReturnRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -275,6 +295,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
