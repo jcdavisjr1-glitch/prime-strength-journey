@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
@@ -28,11 +28,11 @@ function AccountPage() {
   const [syncResult, setSyncResult] = useState<SyncResult | null>(null);
   const [syncErr, setSyncErr] = useState<string | null>(null);
 
-  const handleRunSync = async () => {
+  const handleRunSync = async (opts?: { onlyMissing?: boolean }) => {
     setSyncErr(null);
     setSyncing(true);
     try {
-      const r = await runSync();
+      const r = await runSync({ data: { onlyMissing: !!opts?.onlyMissing } });
       setSyncResult(r);
     } catch (e) {
       setSyncErr(e instanceof Error ? e.message : "Sync failed.");
@@ -40,6 +40,15 @@ function AccountPage() {
       setSyncing(false);
     }
   };
+
+  // Auto-run once on mount to fill in the previously-unmatched exercises.
+  const autoRanRef = useRef(false);
+  useEffect(() => {
+    if (!user || autoRanRef.current) return;
+    autoRanRef.current = true;
+    handleRunSync({ onlyMissing: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
@@ -187,7 +196,7 @@ function AccountPage() {
 
             <button
               type="button"
-              onClick={handleRunSync}
+              onClick={() => handleRunSync({ onlyMissing: true })}
               disabled={syncing}
               className="font-display tracking-wider uppercase text-xs px-4 py-2 rounded-sm border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-60"
             >
