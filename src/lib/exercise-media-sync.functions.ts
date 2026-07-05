@@ -206,6 +206,9 @@ export const syncMuscleWikiMedia = createServerFn({ method: "POST" })
       upserted: 0,
       unmatched: [],
       errors: [],
+      verifiedSaved: 0,
+      verifiedMissing: [],
+      verificationSamples: [],
     };
 
     try {
