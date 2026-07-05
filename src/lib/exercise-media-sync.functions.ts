@@ -252,15 +252,25 @@ export const syncMuscleWikiMedia = createServerFn({ method: "POST" })
           }
 
           const c = best.row;
-          const front = pickField(c, [
-            "video_url_front", "videoURL", "video_url", "male_video", "front_video", "video",
-          ]);
-          const side = pickField(c, [
-            "video_url_side", "side_video", "videoURL_side", "video_side",
-          ]);
-          const instructions = pickField(c, ["instructions", "description", "steps", "how_to"]);
-          const muscle = pickField(c, ["muscle_group", "primary_muscle", "muscle", "category"]);
-          const equipment = pickField(c, ["equipment", "equipment_name", "gear"]);
+          const candId = c?.id;
+          let detail: any = c;
+          if (candId != null) {
+            const fetched = await fetchExerciseDetail(candId, apiKey);
+            if (fetched) detail = fetched;
+          }
+
+          const { front, side } = extractVideoUrls(detail);
+          const stepsArr: string[] = Array.isArray(detail?.steps) ? detail.steps : [];
+          const instructions =
+            stepsArr.length > 0
+              ? stepsArr.join("\n")
+              : pickField(detail, ["instructions", "description", "how_to"]);
+          const primaryMuscles: string[] = Array.isArray(detail?.primary_muscles)
+            ? detail.primary_muscles
+            : [];
+          const muscle =
+            primaryMuscles[0] ?? pickField(detail, ["muscle_group", "primary_muscle", "muscle"]);
+          const equipment = pickField(detail, ["category", "equipment", "equipment_name", "gear"]);
 
           const { error: upErr } = await supabaseAdmin.from("exercise_media").upsert(
             {
