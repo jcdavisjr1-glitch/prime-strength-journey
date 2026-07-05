@@ -161,6 +161,29 @@ async function fetchCandidates(term: string, apiKey: string) {
   return extractCandidates(json);
 }
 
+async function fetchExerciseDetail(id: number | string, apiKey: string): Promise<any | null> {
+  const res = await fetch(`${MUSCLEWIKI_BASE}/${encodeURIComponent(String(id))}`, {
+    headers: { "X-API-Key": apiKey, Accept: "application/json" },
+  });
+  if (!res.ok) return null;
+  return await res.json().catch(() => null);
+}
+
+function extractVideoUrls(detail: any): { front: string | null; side: string | null } {
+  const videos: any[] = Array.isArray(detail?.videos) ? detail.videos : [];
+  const pickAngle = (angle: string) => {
+    const male = videos.find(
+      (v) => v?.angle === angle && v?.gender === "male" && typeof v?.url === "string" && v.url,
+    );
+    if (male) return male.url as string;
+    const any = videos.find(
+      (v) => v?.angle === angle && typeof v?.url === "string" && v.url,
+    );
+    return any ? (any.url as string) : null;
+  };
+  return { front: pickAngle("front"), side: pickAngle("side") };
+}
+
 export const syncMuscleWikiMedia = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { onlyMissing?: boolean } | undefined) => d ?? {})
