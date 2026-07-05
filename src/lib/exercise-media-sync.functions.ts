@@ -6,6 +6,13 @@ const MUSCLEWIKI_BASE = "https://api.musclewiki.com/exercises";
 
 // ---------- Public read ----------
 
+export type VerificationSample = {
+  name: string;
+  saved: boolean;
+  has_front: boolean;
+  has_side: boolean;
+};
+
 export type ExerciseMediaRow = {
   exercise_name: string;
   video_url_front: string | null;
