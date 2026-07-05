@@ -183,10 +183,33 @@ function AccountPage() {
                   : 0}
                 % matched
               </span>
+              <span className="px-2 py-1 rounded-sm bg-primary/10 text-primary border border-primary/40">
+                {syncResult.verifiedSaved} verified in DB
+              </span>
+              {syncResult.verifiedMissing.length > 0 && (
+                <span className="px-2 py-1 rounded-sm bg-destructive/10 text-destructive border border-destructive/40">
+                  {syncResult.verifiedMissing.length} missing after upsert
+                </span>
+              )}
               <span className="px-2 py-1 rounded-sm bg-destructive/10 text-destructive border border-destructive/40">
                 {syncResult.errors.length} error{syncResult.errors.length === 1 ? "" : "s"}
               </span>
             </div>
+
+            {syncResult.verificationSamples.length > 0 && (
+              <details className="rounded-sm border border-border bg-background/50">
+                <summary className="cursor-pointer px-4 py-2 font-display tracking-widest uppercase text-xs text-muted-foreground">
+                  Verification samples ({syncResult.verificationSamples.length})
+                </summary>
+                <ul className="px-4 pb-3 text-xs text-muted-foreground space-y-1 font-mono">
+                  {syncResult.verificationSamples.map((s) => (
+                    <li key={s.name}>
+                      {s.name} — front:{s.has_front ? "✓" : "✗"} side:{s.has_side ? "✓" : "✗"}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            )}
 
             <button
               type="button"
