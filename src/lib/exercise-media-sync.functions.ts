@@ -94,12 +94,81 @@ function extractCandidates(payload: any): any[] {
   return [];
 }
 
+function simplifyName(raw: string): string[] {
+  const variants = new Set<string>();
+  const add = (s: string) => {
+    const t = s.trim().replace(/\s+/g, " ");
+    if (t) variants.add(t);
+  };
+
+  add(raw);
+
+  // Strip parenthetical descriptions: "foo (bar)" -> "foo"
+  const noParen = raw.replace(/\([^)]*\)/g, " ").trim();
+  add(noParen);
+
+  // Strip em-dash / en-dash / hyphen modifiers: "foo — heavy" -> "foo"
+  const noDashMod = noParen.replace(/\s*[—–-]\s*(heavy|light|weighted|standing|seated|hard|easy|advanced|beginner).*$/i, "");
+  add(noDashMod);
+
+  // Handle "A or B" - take the first alternative
+  const orSplit = noDashMod.split(/\s+or\s+/i)[0];
+  add(orSplit);
+
+  // Strip descriptive modifier adjectives at any position
+  const MODIFIERS = [
+    "heavy", "light", "weighted", "assisted", "chair-assisted", "chair",
+    "rear foot elevated", "front foot elevated",
+    "standing", "seated", "kneeling", "incline", "decline",
+    "advanced", "beginner", "modified",
+  ];
+  let cleaned = orSplit.toLowerCase();
+  for (const m of MODIFIERS) {
+    cleaned = cleaned.replace(new RegExp(`\\b${m}\\b`, "gi"), " ");
+  }
+  cleaned = cleaned.replace(/\s+/g, " ").trim();
+  add(cleaned);
+
+  // Equipment abbreviations
+  const dbExpanded = cleaned.replace(/\bdb\b/gi, "dumbbell");
+  add(dbExpanded);
+
+  // Core movement fallbacks: last 1-3 words
+  const words = dbExpanded.split(" ").filter(Boolean);
+  if (words.length >= 2) add(words.slice(-2).join(" "));
+  if (words.length >= 1) add(words.slice(-1).join(" "));
+
+  // Hyphenation variants: "push-up" <-> "push up"
+  const result: string[] = [];
+  for (const v of variants) {
+    result.push(v);
+    if (v.includes("-")) result.push(v.replace(/-/g, " "));
+  }
+  // De-dupe preserving order
+  return Array.from(new Set(result.map((s) => s.trim()).filter(Boolean)));
+}
+
+async function fetchCandidates(term: string, apiKey: string) {
+  const url = `${MUSCLEWIKI_BASE}?search=${encodeURIComponent(term)}&limit=10`;
+  const res = await fetch(url, {
+    headers: { "X-API-Key": apiKey, Accept: "application/json" },
+  });
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new Error(`HTTP ${res.status} ${body.slice(0, 200)}`);
+  }
+  const json = await res.json().catch(() => null);
+  return extractCandidates(json);
+}
+
 export const syncMuscleWikiMedia = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async (): Promise<SyncResult> => {
-    const names = collectExerciseNames();
+  .inputValidator((d: { onlyMissing?: boolean } | undefined) => d ?? {})
+  .handler(async ({ data }): Promise<SyncResult> => {
+    const onlyMissing = !!data.onlyMissing;
+    const allNames = collectExerciseNames();
     const result: SyncResult = {
-      total: names.length,
+      total: allNames.length,
       matched: 0,
       upserted: 0,
       unmatched: [],
@@ -115,83 +184,81 @@ export const syncMuscleWikiMedia = createServerFn({ method: "POST" })
 
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
+      // If onlyMissing, look up already-saved exercise_name rows and skip them
+      let names = allNames;
+      let existingCount = 0;
+      if (onlyMissing) {
+        const { data: existing, error: exErr } = await supabaseAdmin
+          .from("exercise_media")
+          .select("exercise_name, video_url_front, video_url_side");
+        if (exErr) {
+          result.errors.push({ name: "*", error: exErr.message });
+          return result;
+        }
+        const haveVideo = new Set(
+          (existing ?? [])
+            .filter((r: any) => r.video_url_front || r.video_url_side)
+            .map((r: any) => r.exercise_name as string),
+        );
+        existingCount = haveVideo.size;
+        names = allNames.filter((n) => !haveVideo.has(n));
+        result.matched = existingCount;
+        result.upserted = existingCount;
+      }
+
       for (const name of names) {
         try {
-        const url = `${MUSCLEWIKI_BASE}?search=${encodeURIComponent(name)}&limit=10`;
-        const res = await fetch(url, {
-          headers: { "X-API-Key": apiKey, Accept: "application/json" },
-        });
+          const searchTerms = simplifyName(name);
+          let best: { score: number; row: any } | null = null;
 
-        if (!res.ok) {
-          const body = await res.text().catch(() => "");
-          result.errors.push({ name, error: `HTTP ${res.status} ${body.slice(0, 200)}` });
-          continue;
-        }
+          for (const term of searchTerms) {
+            const candidates = await fetchCandidates(term, apiKey);
+            if (candidates.length === 0) continue;
+            for (const c of candidates) {
+              const candName = pickField(c, ["name", "exercise_name", "title"]);
+              if (!candName) continue;
+              const score = scoreMatch(term, candName);
+              if (!best || score > best.score) best = { score, row: c };
+            }
+            if (best && best.score >= 0.6) break; // good enough, stop trying variants
+          }
 
-        const json = await res.json().catch(() => null);
-        const candidates = extractCandidates(json);
-        if (candidates.length === 0) {
-          result.unmatched.push(name);
-          continue;
-        }
+          if (!best || best.score < 0.4) {
+            result.unmatched.push(name);
+            continue;
+          }
 
-        let best: { score: number; row: any } | null = null;
-        for (const c of candidates) {
-          const candName = pickField(c, ["name", "exercise_name", "title"]);
-          if (!candName) continue;
-          const score = scoreMatch(name, candName);
-          if (!best || score > best.score) best = { score, row: c };
-        }
+          const c = best.row;
+          const front = pickField(c, [
+            "video_url_front", "videoURL", "video_url", "male_video", "front_video", "video",
+          ]);
+          const side = pickField(c, [
+            "video_url_side", "side_video", "videoURL_side", "video_side",
+          ]);
+          const instructions = pickField(c, ["instructions", "description", "steps", "how_to"]);
+          const muscle = pickField(c, ["muscle_group", "primary_muscle", "muscle", "category"]);
+          const equipment = pickField(c, ["equipment", "equipment_name", "gear"]);
 
-        if (!best || best.score < 0.4) {
-          result.unmatched.push(name);
-          continue;
-        }
+          const { error: upErr } = await supabaseAdmin.from("exercise_media").upsert(
+            {
+              exercise_name: name,
+              video_url_front: front,
+              video_url_side: side,
+              instructions,
+              muscle_group: muscle,
+              equipment,
+              fetched_at: new Date().toISOString(),
+            },
+            { onConflict: "exercise_name" },
+          );
 
-        const c = best.row;
-        const front = pickField(c, [
-          "video_url_front",
-          "videoURL",
-          "video_url",
-          "male_video",
-          "front_video",
-          "video",
-        ]);
-        const side = pickField(c, [
-          "video_url_side",
-          "side_video",
-          "videoURL_side",
-          "video_side",
-        ]);
-        const instructions = pickField(c, [
-          "instructions",
-          "description",
-          "steps",
-          "how_to",
-        ]);
-        const muscle = pickField(c, ["muscle_group", "primary_muscle", "muscle", "category"]);
-        const equipment = pickField(c, ["equipment", "equipment_name", "gear"]);
+          if (upErr) {
+            result.errors.push({ name, error: upErr.message });
+            continue;
+          }
 
-        const { error: upErr } = await supabaseAdmin.from("exercise_media").upsert(
-          {
-            exercise_name: name,
-            video_url_front: front,
-            video_url_side: side,
-            instructions,
-            muscle_group: muscle,
-            equipment,
-            fetched_at: new Date().toISOString(),
-          },
-          { onConflict: "exercise_name" },
-        );
-
-        if (upErr) {
-          result.errors.push({ name, error: upErr.message });
-          continue;
-        }
-
-        result.matched += 1;
-        result.upserted += 1;
+          result.matched += 1;
+          result.upserted += 1;
         } catch (e) {
           result.errors.push({ name, error: e instanceof Error ? e.message : String(e) });
         }
