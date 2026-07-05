@@ -48,6 +48,9 @@ export type SyncResult = {
   upserted: number;
   unmatched: string[];
   errors: { name: string; error: string }[];
+  verifiedSaved: number;
+  verifiedMissing: string[];
+  verificationSamples: VerificationSample[];
 };
 
 function collectExerciseNames(): string[] {
