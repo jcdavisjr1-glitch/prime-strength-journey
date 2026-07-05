@@ -28,11 +28,11 @@ function AccountPage() {
   const [syncResult, setSyncResult] = useState<SyncResult | null>(null);
   const [syncErr, setSyncErr] = useState<string | null>(null);
 
-  const handleRunSync = async () => {
+  const handleRunSync = async (opts?: { onlyMissing?: boolean }) => {
     setSyncErr(null);
     setSyncing(true);
     try {
-      const r = await runSync();
+      const r = await runSync({ data: { onlyMissing: !!opts?.onlyMissing } });
       setSyncResult(r);
     } catch (e) {
       setSyncErr(e instanceof Error ? e.message : "Sync failed.");
@@ -40,6 +40,15 @@ function AccountPage() {
       setSyncing(false);
     }
   };
+
+  // Auto-run once on mount to fill in the previously-unmatched exercises.
+  const autoRanRef = useRef(false);
+  useEffect(() => {
+    if (!user || autoRanRef.current) return;
+    autoRanRef.current = true;
+    handleRunSync({ onlyMissing: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
