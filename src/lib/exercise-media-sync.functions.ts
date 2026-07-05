@@ -303,6 +303,36 @@ export const syncMuscleWikiMedia = createServerFn({ method: "POST" })
             continue;
           }
 
+          // Verify the row actually persisted with a non-null video_url_front
+          const { data: verifyRow, error: verifyErr } = await supabaseAdmin
+            .from("exercise_media")
+            .select("exercise_name, video_url_front, video_url_side")
+            .eq("exercise_name", name)
+            .maybeSingle();
+
+          if (verifyErr) {
+            result.errors.push({ name, error: `verify: ${verifyErr.message}` });
+          } else if (!verifyRow) {
+            result.verifiedMissing.push(name);
+            result.errors.push({ name, error: "verify: row not found after upsert" });
+          } else {
+            const hasFront = !!verifyRow.video_url_front;
+            const hasSide = !!verifyRow.video_url_side;
+            if (hasFront || hasSide) {
+              result.verifiedSaved += 1;
+            } else {
+              result.verifiedMissing.push(name);
+            }
+            if (result.verificationSamples.length < 5) {
+              result.verificationSamples.push({
+                name,
+                saved: true,
+                has_front: hasFront,
+                has_side: hasSide,
+              });
+            }
+          }
+
           result.matched += 1;
           result.upserted += 1;
         } catch (e) {
