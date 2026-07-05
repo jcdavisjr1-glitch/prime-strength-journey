@@ -41,14 +41,8 @@ function AccountPage() {
     }
   };
 
-  // Auto-run once on mount to fill in the previously-unmatched exercises.
+  // Auto-run disabled — user triggers sync manually via the button below.
   const autoRanRef = useRef(false);
-  useEffect(() => {
-    if (!user || autoRanRef.current) return;
-    autoRanRef.current = true;
-    handleRunSync({ onlyMissing: true });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
