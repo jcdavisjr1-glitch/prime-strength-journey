@@ -80,6 +80,9 @@ function ExerciseDemoModal({
   videoUrl: string;
   onClose: () => void;
 }) {
+  const [videoError, setVideoError] = useState(false);
+  console.log("[WatchForm] modal render", { exerciseName, videoUrl });
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
