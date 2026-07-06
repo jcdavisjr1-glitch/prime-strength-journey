@@ -48,6 +48,7 @@ export function WatchFormButton({ exerciseName }: { exerciseName: string }) {
         type="button"
         onClick={(e) => {
           e.stopPropagation();
+          console.log("[WatchForm] opening modal", { exerciseName, videoUrl });
           setOpen(true);
         }}
         className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-display uppercase tracking-widest text-primary border border-primary/40 hover:bg-primary hover:text-primary-foreground transition-colors"
@@ -79,6 +80,9 @@ function ExerciseDemoModal({
   videoUrl: string;
   onClose: () => void;
 }) {
+  const [videoError, setVideoError] = useState(false);
+  console.log("[WatchForm] modal render", { exerciseName, videoUrl });
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -105,16 +109,28 @@ function ExerciseDemoModal({
         >
           <X className="h-4 w-4" />
         </button>
-        <div className="relative w-full aspect-square bg-black flex items-center justify-center">
-          <video
-            src={videoUrl}
-            autoPlay
-            loop
-            muted
-            playsInline
-            controls
-            className="w-full h-full object-contain"
-          />
+        <div className="relative w-full bg-black flex items-center justify-center" style={{ minHeight: 200 }}>
+          {videoError ? (
+            <div className="p-6 text-center text-sm text-muted-foreground" style={{ width: "100%", maxWidth: 500 }}>
+              Video unavailable — check the exercise instructions below.
+            </div>
+          ) : (
+            <video
+              src={videoUrl}
+              autoPlay
+              loop
+              muted
+              playsInline
+              controls
+              crossOrigin="anonymous"
+              onError={(e) => {
+                console.error("[WatchForm] video error", { exerciseName, videoUrl, event: e });
+                setVideoError(true);
+              }}
+              style={{ width: "100%", maxWidth: 500 }}
+              className="object-contain"
+            />
+          )}
         </div>
         <div className="p-4 border-t border-border">
           <div className="font-display uppercase tracking-[0.3em] text-primary text-[10px]">
