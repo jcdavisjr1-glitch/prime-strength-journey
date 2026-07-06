@@ -48,6 +48,7 @@ export function WatchFormButton({ exerciseName }: { exerciseName: string }) {
         type="button"
         onClick={(e) => {
           e.stopPropagation();
+          console.log("[WatchForm] opening modal", { exerciseName, videoUrl });
           setOpen(true);
         }}
         className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-display uppercase tracking-widest text-primary border border-primary/40 hover:bg-primary hover:text-primary-foreground transition-colors"
