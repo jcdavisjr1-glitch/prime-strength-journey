@@ -122,7 +122,7 @@ function ExerciseDemoModal({
               muted
               playsInline
               controls
-              crossOrigin="anonymous"
+              
               onError={(e) => {
                 console.error("[WatchForm] video error", { exerciseName, videoUrl, event: e });
                 setVideoError(true);
