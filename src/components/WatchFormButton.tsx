@@ -40,8 +40,10 @@ function useDbMedia(name: string): ExerciseMediaRow | null {
 export function WatchFormButton({ exerciseName }: { exerciseName: string }) {
   const [open, setOpen] = useState(false);
   const dbRow = useDbMedia(exerciseName);
-  const videoUrl = dbRow?.video_url_front || dbRow?.video_url_side || null;
-  if (!videoUrl) return null;
+  const hasVideo = !!(dbRow?.video_url_front || dbRow?.video_url_side);
+  if (!hasVideo || !dbRow) return null;
+  const angle = dbRow.video_url_front ? "front" : "side";
+  const videoUrl = `/api/public/exercise-video?name=${encodeURIComponent(exerciseName)}&angle=${angle}`;
   return (
     <>
       <button
