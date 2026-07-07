@@ -6,6 +6,11 @@ import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { getMyProfileAndAccess } from "@/lib/profile.functions";
 import { updateWalkingGoal } from "@/lib/walking-logs.functions";
 import { syncMuscleWikiMedia, type SyncResult } from "@/lib/exercise-media-sync.functions";
+import {
+  listPendingVideoDownloads,
+  downloadExerciseVideo,
+  type DownloadResult,
+} from "@/lib/exercise-video-download.functions";
 
 export const Route = createFileRoute("/dashboard/account")({
   ssr: false,
@@ -27,6 +32,47 @@ function AccountPage() {
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState<SyncResult | null>(null);
   const [syncErr, setSyncErr] = useState<string | null>(null);
+
+  const listPending = useServerFn(listPendingVideoDownloads);
+  const downloadOne = useServerFn(downloadExerciseVideo);
+  const [dlRunning, setDlRunning] = useState(false);
+  const [dlTotal, setDlTotal] = useState(0);
+  const [dlAlreadyDone, setDlAlreadyDone] = useState(0);
+  const [dlResults, setDlResults] = useState<DownloadResult[]>([]);
+  const [dlErr, setDlErr] = useState<string | null>(null);
+  const [dlDone, setDlDone] = useState(false);
+
+  const handleDownloadAll = async () => {
+    setDlErr(null);
+    setDlDone(false);
+    setDlResults([]);
+    setDlRunning(true);
+    try {
+      const { pending, alreadyDone, total } = await listPending({});
+      setDlTotal(total);
+      setDlAlreadyDone(alreadyDone);
+      if (pending.length === 0) {
+        setDlDone(true);
+        return;
+      }
+      for (const name of pending) {
+        try {
+          const r = await downloadOne({ data: { name } });
+          setDlResults((prev) => [...prev, r]);
+        } catch (e) {
+          setDlResults((prev) => [
+            ...prev,
+            { name, ok: false, error: e instanceof Error ? e.message : String(e) },
+          ]);
+        }
+      }
+      setDlDone(true);
+    } catch (e) {
+      setDlErr(e instanceof Error ? e.message : "Download failed.");
+    } finally {
+      setDlRunning(false);
+    }
+  };
 
   const handleRunSync = async (opts?: { onlyMissing?: boolean }) => {
     setSyncErr(null);
@@ -155,18 +201,38 @@ function AccountPage() {
           library and caches them. Run this manually — not on every page load — to stay
           within the API rate limit.
         </p>
-        <button
-          type="button"
-          onClick={() => {
-            setSyncResult(null);
-            handleRunSync();
-          }}
-          disabled={syncing}
-          className="mt-4 font-display tracking-wider uppercase text-sm px-5 py-2.5 rounded-sm border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-60"
-        >
-          {syncing ? "Syncing…" : "Sync exercise videos"}
-        </button>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={() => {
+              setSyncResult(null);
+              handleRunSync();
+            }}
+            disabled={syncing || dlRunning}
+            className="font-display tracking-wider uppercase text-sm px-5 py-2.5 rounded-sm border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-60"
+          >
+            {syncing ? "Syncing…" : "Sync exercise videos"}
+          </button>
+          <button
+            type="button"
+            onClick={handleDownloadAll}
+            disabled={syncing || dlRunning}
+            className="font-display tracking-wider uppercase text-sm px-5 py-2.5 rounded-sm bg-primary text-primary-foreground hover:bg-primary-glow transition-colors disabled:opacity-60"
+          >
+            {dlRunning ? "Downloading…" : "Download videos to storage"}
+          </button>
+        </div>
         {syncErr && <div className="mt-3 text-sm text-destructive">{syncErr}</div>}
+        {dlErr && <div className="mt-3 text-sm text-destructive">{dlErr}</div>}
+        {(dlRunning || dlResults.length > 0 || dlDone) && (
+          <DownloadProgress
+            running={dlRunning}
+            done={dlDone}
+            total={dlTotal}
+            alreadyDone={dlAlreadyDone}
+            results={dlResults}
+          />
+        )}
         {syncResult && (
           <div className="mt-5 space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -319,4 +385,73 @@ function StatTile({
 
 function cap(s: string | null | undefined) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
+}
+
+function DownloadProgress({
+  running,
+  done,
+  total,
+  alreadyDone,
+  results,
+}: {
+  running: boolean;
+  done: boolean;
+  total: number;
+  alreadyDone: number;
+  results: DownloadResult[];
+}) {
+  const completed = results.filter((r) => r.ok).length;
+  const failed = results.filter((r) => !r.ok);
+  const overallDone = alreadyDone + completed;
+  const label = done
+    ? "Done"
+    : running
+      ? `Downloaded ${overallDone} of ${total}`
+      : `Ready — ${overallDone} of ${total}`;
+
+  return (
+    <div className="mt-5 space-y-3 rounded-sm border border-border bg-background/50 p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div className="font-display tracking-widest uppercase text-xs text-muted-foreground">
+          {label}
+        </div>
+        {done && (
+          <span className="font-display tracking-widest uppercase text-[10px] px-2 py-1 rounded-sm bg-primary/10 text-primary border border-primary/40">
+            Complete
+          </span>
+        )}
+      </div>
+      <div className="h-2 w-full rounded-sm bg-border overflow-hidden">
+        <div
+          className="h-full bg-primary transition-all"
+          style={{
+            width: total > 0 ? `${(overallDone / total) * 100}%` : "0%",
+          }}
+        />
+      </div>
+      {alreadyDone > 0 && (
+        <div className="text-xs text-muted-foreground">
+          {alreadyDone} already in storage — skipped.
+        </div>
+      )}
+      {results.length > 0 && (
+        <ul className="max-h-64 overflow-auto text-xs space-y-1 font-mono">
+          {results.map((r, i) => (
+            <li
+              key={`${r.name}-${i}`}
+              className={r.ok ? "text-foreground" : "text-destructive"}
+            >
+              {r.ok ? "✓" : "✗"} {r.name}
+              {!r.ok && r.error ? ` — ${r.error}` : ""}
+            </li>
+          ))}
+        </ul>
+      )}
+      {failed.length > 0 && done && (
+        <div className="text-xs text-destructive">
+          {failed.length} failed. Retry by clicking the button again — completed items are skipped.
+        </div>
+      )}
+    </div>
+  );
 }
