@@ -201,18 +201,38 @@ function AccountPage() {
           library and caches them. Run this manually — not on every page load — to stay
           within the API rate limit.
         </p>
-        <button
-          type="button"
-          onClick={() => {
-            setSyncResult(null);
-            handleRunSync();
-          }}
-          disabled={syncing}
-          className="mt-4 font-display tracking-wider uppercase text-sm px-5 py-2.5 rounded-sm border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-60"
-        >
-          {syncing ? "Syncing…" : "Sync exercise videos"}
-        </button>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={() => {
+              setSyncResult(null);
+              handleRunSync();
+            }}
+            disabled={syncing || dlRunning}
+            className="font-display tracking-wider uppercase text-sm px-5 py-2.5 rounded-sm border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-60"
+          >
+            {syncing ? "Syncing…" : "Sync exercise videos"}
+          </button>
+          <button
+            type="button"
+            onClick={handleDownloadAll}
+            disabled={syncing || dlRunning}
+            className="font-display tracking-wider uppercase text-sm px-5 py-2.5 rounded-sm bg-primary text-primary-foreground hover:bg-primary-glow transition-colors disabled:opacity-60"
+          >
+            {dlRunning ? "Downloading…" : "Download videos to storage"}
+          </button>
+        </div>
         {syncErr && <div className="mt-3 text-sm text-destructive">{syncErr}</div>}
+        {dlErr && <div className="mt-3 text-sm text-destructive">{dlErr}</div>}
+        {(dlRunning || dlResults.length > 0 || dlDone) && (
+          <DownloadProgress
+            running={dlRunning}
+            done={dlDone}
+            total={dlTotal}
+            alreadyDone={dlAlreadyDone}
+            results={dlResults}
+          />
+        )}
         {syncResult && (
           <div className="mt-5 space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
