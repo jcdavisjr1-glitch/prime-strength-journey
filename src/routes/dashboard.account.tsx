@@ -386,3 +386,72 @@ function StatTile({
 function cap(s: string | null | undefined) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
 }
+
+function DownloadProgress({
+  running,
+  done,
+  total,
+  alreadyDone,
+  results,
+}: {
+  running: boolean;
+  done: boolean;
+  total: number;
+  alreadyDone: number;
+  results: DownloadResult[];
+}) {
+  const completed = results.filter((r) => r.ok).length;
+  const failed = results.filter((r) => !r.ok);
+  const overallDone = alreadyDone + completed;
+  const label = done
+    ? "Done"
+    : running
+      ? `Downloaded ${overallDone} of ${total}`
+      : `Ready — ${overallDone} of ${total}`;
+
+  return (
+    <div className="mt-5 space-y-3 rounded-sm border border-border bg-background/50 p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div className="font-display tracking-widest uppercase text-xs text-muted-foreground">
+          {label}
+        </div>
+        {done && (
+          <span className="font-display tracking-widest uppercase text-[10px] px-2 py-1 rounded-sm bg-primary/10 text-primary border border-primary/40">
+            Complete
+          </span>
+        )}
+      </div>
+      <div className="h-2 w-full rounded-sm bg-border overflow-hidden">
+        <div
+          className="h-full bg-primary transition-all"
+          style={{
+            width: total > 0 ? `${(overallDone / total) * 100}%` : "0%",
+          }}
+        />
+      </div>
+      {alreadyDone > 0 && (
+        <div className="text-xs text-muted-foreground">
+          {alreadyDone} already in storage — skipped.
+        </div>
+      )}
+      {results.length > 0 && (
+        <ul className="max-h-64 overflow-auto text-xs space-y-1 font-mono">
+          {results.map((r, i) => (
+            <li
+              key={`${r.name}-${i}`}
+              className={r.ok ? "text-foreground" : "text-destructive"}
+            >
+              {r.ok ? "✓" : "✗"} {r.name}
+              {!r.ok && r.error ? ` — ${r.error}` : ""}
+            </li>
+          ))}
+        </ul>
+      )}
+      {failed.length > 0 && done && (
+        <div className="text-xs text-destructive">
+          {failed.length} failed. Retry by clicking the button again — completed items are skipped.
+        </div>
+      )}
+    </div>
+  );
+}
