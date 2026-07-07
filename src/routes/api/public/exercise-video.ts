@@ -45,8 +45,8 @@ async function handle(request: Request, headOnly: boolean): Promise<Response> {
   );
   const { data, error } = await sb
     .from("exercise_media")
-    .select("video_url_front, video_url_side")
-    .eq("exercise_name", name)
+    .select("exercise_name, video_url_front, video_url_side")
+    .ilike("exercise_name", name)
     .maybeSingle();
 
   if (error || !data) {
