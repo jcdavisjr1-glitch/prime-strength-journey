@@ -6,6 +6,11 @@ import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { getMyProfileAndAccess } from "@/lib/profile.functions";
 import { updateWalkingGoal } from "@/lib/walking-logs.functions";
 import { syncMuscleWikiMedia, type SyncResult } from "@/lib/exercise-media-sync.functions";
+import {
+  listPendingVideoDownloads,
+  downloadExerciseVideo,
+  type DownloadResult,
+} from "@/lib/exercise-video-download.functions";
 
 export const Route = createFileRoute("/dashboard/account")({
   ssr: false,
