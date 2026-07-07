@@ -33,6 +33,47 @@ function AccountPage() {
   const [syncResult, setSyncResult] = useState<SyncResult | null>(null);
   const [syncErr, setSyncErr] = useState<string | null>(null);
 
+  const listPending = useServerFn(listPendingVideoDownloads);
+  const downloadOne = useServerFn(downloadExerciseVideo);
+  const [dlRunning, setDlRunning] = useState(false);
+  const [dlTotal, setDlTotal] = useState(0);
+  const [dlAlreadyDone, setDlAlreadyDone] = useState(0);
+  const [dlResults, setDlResults] = useState<DownloadResult[]>([]);
+  const [dlErr, setDlErr] = useState<string | null>(null);
+  const [dlDone, setDlDone] = useState(false);
+
+  const handleDownloadAll = async () => {
+    setDlErr(null);
+    setDlDone(false);
+    setDlResults([]);
+    setDlRunning(true);
+    try {
+      const { pending, alreadyDone, total } = await listPending({});
+      setDlTotal(total);
+      setDlAlreadyDone(alreadyDone);
+      if (pending.length === 0) {
+        setDlDone(true);
+        return;
+      }
+      for (const name of pending) {
+        try {
+          const r = await downloadOne({ data: { name } });
+          setDlResults((prev) => [...prev, r]);
+        } catch (e) {
+          setDlResults((prev) => [
+            ...prev,
+            { name, ok: false, error: e instanceof Error ? e.message : String(e) },
+          ]);
+        }
+      }
+      setDlDone(true);
+    } catch (e) {
+      setDlErr(e instanceof Error ? e.message : "Download failed.");
+    } finally {
+      setDlRunning(false);
+    }
+  };
+
   const handleRunSync = async (opts?: { onlyMissing?: boolean }) => {
     setSyncErr(null);
     setSyncing(true);
