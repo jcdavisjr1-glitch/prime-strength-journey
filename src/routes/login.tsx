@@ -47,7 +47,7 @@ function LoginPage() {
       return setError("Enter your email above first, then click Forgot password.");
     }
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/login`,
+      redirectTo: `${window.location.origin}/reset-password`,
     });
     if (resetError) return setError(resetError.message);
     setInfo("Password reset email sent. Check your inbox.");
