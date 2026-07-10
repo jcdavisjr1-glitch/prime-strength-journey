@@ -19,6 +19,7 @@ function ResetPasswordPage() {
   const [hasSession, setHasSession] = useState(false);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -78,13 +79,22 @@ function ResetPasswordPage() {
               <span className="font-display tracking-widest uppercase text-xs text-muted-foreground">
                 New password
               </span>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="new-password"
-                className="mt-2 w-full bg-surface border border-border focus:border-primary outline-none rounded-sm px-4 py-3 text-foreground transition-colors"
-              />
+              <div className="relative mt-2">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="new-password"
+                  className="w-full bg-surface border border-border focus:border-primary outline-none rounded-sm px-4 py-3 pr-16 text-foreground transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  className="absolute inset-y-0 right-0 px-3 text-xs font-display tracking-widest uppercase text-muted-foreground hover:text-primary"
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
             </label>
 
             <label className="block">
@@ -92,7 +102,7 @@ function ResetPasswordPage() {
                 Confirm password
               </span>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 autoComplete="new-password"

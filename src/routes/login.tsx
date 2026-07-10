@@ -21,6 +21,7 @@ function LoginPage() {
   const { next } = Route.useSearch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -90,13 +91,22 @@ function LoginPage() {
                 Forgot?
               </button>
             </div>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              className="mt-2 w-full bg-surface border border-border focus:border-primary outline-none rounded-sm px-4 py-3 text-foreground transition-colors"
-            />
+            <div className="relative mt-2">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                className="w-full bg-surface border border-border focus:border-primary outline-none rounded-sm px-4 py-3 pr-16 text-foreground transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((s) => !s)}
+                className="absolute inset-y-0 right-0 px-3 text-xs font-display tracking-widest uppercase text-muted-foreground hover:text-primary"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
           </label>
 
           {error && (
