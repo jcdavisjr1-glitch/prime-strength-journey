@@ -834,8 +834,8 @@ function Landing() {
         <Science />
         <VideoProof />
         <HowItWorks />
-        <Couples />
         <Pricing />
+        <Couples />
         <Testimonials />
         <Faq />
         <Cancellation />
