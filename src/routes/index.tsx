@@ -297,7 +297,7 @@ function Science() {
         <img
           src="/science.jpg"
           alt="Man in a home gym with a power rack and dumbbells"
-          className="absolute inset-0 w-full h-full object-cover object-center"
+          className="absolute inset-0 w-full h-full object-cover object-top"
         />
         {/* Dark left-to-right fade for headline legibility */}
         <div
