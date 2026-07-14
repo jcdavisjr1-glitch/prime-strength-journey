@@ -293,11 +293,11 @@ function Science() {
   return (
     <section className="bg-surface overflow-hidden">
       {/* Full-width image with headline overlay */}
-      <div className="relative h-[340px] md:h-[440px] overflow-hidden">
+      <div className="relative h-[520px] md:h-[680px] overflow-hidden">
         <img
           src="/science.jpg"
           alt="Man in a home gym with a power rack and dumbbells"
-          className="absolute inset-0 w-full h-full object-cover object-top"
+          className="absolute inset-0 w-full h-full object-contain object-center bg-black"
         />
         {/* Dark left-to-right fade for headline legibility */}
         <div
