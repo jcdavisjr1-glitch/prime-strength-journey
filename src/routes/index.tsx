@@ -687,7 +687,7 @@ function Faq() {
     },
     {
       q: "Who's behind this?",
-      a: "A real founder, real coaches, and a lot of people who've been through their own forties. We answer our own emails.",
+      a: "FortyStrong was built by a team that watched too many people over forty accept decline as inevitable — and decided to build the honest, science-based alternative. Read our full story in the 'Why We Built FortyStrong' section above.",
     },
   ];
   const [open, setOpen] = useState<number | null>(0);
