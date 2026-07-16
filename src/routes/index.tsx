@@ -508,6 +508,9 @@ function Pricing() {
                 <div className="font-display text-6xl text-primary">{p.price}</div>
                 <div className="text-muted-foreground text-sm">{p.cadence}</div>
               </div>
+              {p.name === "Annual" && (
+                <div className="mt-1 text-xs text-muted-foreground">Just $16.58/month, billed annually</div>
+              )}
               <p className="mt-4 text-muted-foreground">{p.desc}</p>
               <button
                 onClick={() => handleBuy(p.priceId)}
