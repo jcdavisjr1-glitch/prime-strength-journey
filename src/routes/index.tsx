@@ -777,8 +777,8 @@ function Couples() {
 
         <div className="mt-12 grid md:grid-cols-3 gap-4 md:gap-6">
           {[
-            { n: "94%", l: "Higher adherence when couples train together" },
-            { n: "2.3x", l: "More likely to hit 90-day milestones" },
+            { n: "94%", l: "Couples who start together stay together — vs 57% who go it alone" },
+            { n: "50%", l: "Of people who quit exercising cite lack of a support partner as the reason." },
             { n: "1", l: "Plan. Two people. Two dashboards." },
           ].map((s) => (
             <div key={s.l} className="p-6 bg-surface border border-border rounded-lg">
@@ -787,6 +787,9 @@ function Couples() {
             </div>
           ))}
         </div>
+        <p className="mt-4 text-xs text-muted-foreground">
+          Based on a 12-month study in the Journal of Sports Medicine and Physical Fitness (Wallace et al., 1995).
+        </p>
 
         <div className="mt-12 max-w-md p-8 bg-surface border border-primary rounded-lg shadow-[var(--shadow-red)]">
           <div className="font-display tracking-widest uppercase text-sm text-primary">Couples Plan</div>
