@@ -893,11 +893,12 @@ function Landing() {
         <Stats />
         <Truth />
         <Science />
+        <WhyFortyStrong />
         <VideoProof />
         <HowItWorks />
         <Pricing />
         <Couples />
-        <Testimonials />
+        <FoundingMember />
         <Faq />
         <Cancellation />
         <FinalCta />
