@@ -86,8 +86,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "FortyStrong — Reignite Your Prime" },
       { name: "twitter:description", content: "Strength-first fitness built for your 40s, 50s and beyond. Two workouts a week. 45 minutes. Six weeks to feel different." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7b87aa06-649c-48ab-b22b-f22d6e723383/id-preview-fa65a834--58b10d73-0e81-48a0-a54a-fb64063396bd.lovable.app-1783645759894.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7b87aa06-649c-48ab-b22b-f22d6e723383/id-preview-fa65a834--58b10d73-0e81-48a0-a54a-fb64063396bd.lovable.app-1783645759894.png" },
+      { property: "og:image", content: "https://fortystronghealth.com/hero.jpg" },
+      { name: "twitter:image", content: "https://fortystronghealth.com/hero.jpg" },
+      { property: "og:url", content: "https://fortystronghealth.com" },
+      { property: "og:site_name", content: "FortyStrong" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
