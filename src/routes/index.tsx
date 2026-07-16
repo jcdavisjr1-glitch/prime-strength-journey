@@ -886,7 +886,16 @@ function Footer() {
           <a href="#pricing" className="hover:text-foreground">Pricing</a>
           <a href="#couples" className="hover:text-foreground">Couples</a>
           <a href="#faq" className="hover:text-foreground">FAQ</a>
+          <a href="/privacy" className="hover:text-foreground">Privacy</a>
+          <a href="/terms" className="hover:text-foreground">Terms</a>
         </div>
+      </div>
+      <div className="max-w-7xl mx-auto px-4 md:px-8 mt-8">
+        <p className="text-xs text-muted-foreground max-w-4xl">
+          FortyStrong provides general fitness and educational information only. It is not medical advice. Always
+          consult your physician before beginning any exercise program, especially if you have an existing health
+          condition, injury, or take medication. You participate at your own risk.
+        </p>
       </div>
     </footer>
   );
