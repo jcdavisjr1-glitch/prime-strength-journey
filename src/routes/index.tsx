@@ -545,6 +545,11 @@ function Pricing() {
             If you don't feel stronger in 30 days, email us. We'll refund every cent. No forms. No friction.
           </p>
         </div>
+        <p className="mt-6 text-xs text-muted-foreground max-w-3xl">
+          FortyStrong provides general fitness and educational information only. It is not medical advice. Always
+          consult your physician before beginning any exercise program, especially if you have an existing health
+          condition, injury, or take medication. You participate at your own risk.
+        </p>
       </div>
 
       <Dialog open={isOpen} onOpenChange={(v) => !v && closeCheckout()}>
