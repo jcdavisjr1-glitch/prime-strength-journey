@@ -206,7 +206,7 @@ function Hero() {
             results you'll feel — not chase.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <CtaButton>Get My Free Plan</CtaButton>
+            <CtaButton>See Plans</CtaButton>
             <CtaButton variant="ghost" href="#how">
               How It Works
             </CtaButton>
