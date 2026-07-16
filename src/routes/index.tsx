@@ -791,7 +791,7 @@ function FinalCta() {
           Two workouts a week. Forty-five minutes each. Six weeks until you feel different. Start today.
         </p>
         <div className="mt-10">
-          <CtaButton>Get My Free Plan</CtaButton>
+          <CtaButton>See Plans</CtaButton>
         </div>
       </div>
     </section>
