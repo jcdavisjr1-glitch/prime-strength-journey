@@ -556,39 +556,100 @@ function Pricing() {
   );
 }
 
-function Testimonials() {
+function FoundingMember() {
   const items = [
     {
-      q: "I carried my granddaughter on my shoulders at the fair. I haven't done that in eight years.",
-      n: "Mark, 58",
+      t: "Backed by science",
+      d: "Built on peer-reviewed research in strength, aging, and longevity.",
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M10 2v7.31" /><path d="M14 9.3V2" /><path d="M8.5 2h7" /><path d="M14 9.3a6.5 6.5 0 1 1-4 0" />
+        </svg>
+      ),
     },
     {
-      q: "My morning stiffness is gone. Not better. Gone. I didn't know that was on the table.",
-      n: "Lisa, 51",
+      t: "30-day guarantee",
+      d: "Don't feel stronger in 30 days? Full refund. No forms, no friction.",
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" />
+        </svg>
+      ),
     },
     {
-      q: "Got off two of my prescriptions. Doctor asked what I changed. I said I started lifting.",
-      n: "Eli, 62",
+      t: "Cancel anytime",
+      d: "One click. No phone calls. No hoops.",
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" />
+        </svg>
+      ),
     },
   ];
   return (
     <section className="py-20 md:py-28">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <SectionLabel>Real Outcomes</SectionLabel>
+        <SectionLabel>Be One Of The First</SectionLabel>
         <h2 className="mt-4 font-display uppercase text-4xl md:text-6xl max-w-3xl text-balance">
-          Not before-and-afters. <span className="text-primary">Before-and-livings.</span>
+          We're new. And that's <span className="text-primary">the best time to join.</span>
         </h2>
-        <div className="mt-12 grid md:grid-cols-3 gap-4 md:gap-6">
+        <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+          FortyStrong is built on published research, a method designed specifically for bodies over forty, and a
+          simple promise: two focused workouts a week will change how you move through your life. We're building
+          this community right now, one member at a time. Join as a founding member — and be one of the first to
+          reignite your prime.
+        </p>
+        <div className="mt-12 grid sm:grid-cols-3 gap-4 md:gap-6">
           {items.map((i) => (
-            <figure key={i.n} className="p-8 bg-surface border border-border rounded-lg">
-              <div className="text-primary font-display text-5xl leading-none">"</div>
-              <blockquote className="mt-2 text-lg">{i.q}</blockquote>
-              <figcaption className="mt-6 font-display tracking-widest uppercase text-sm text-muted-foreground">
-                — {i.n}
-              </figcaption>
-            </figure>
+            <div key={i.t} className="p-6 md:p-8 bg-surface border border-border rounded-lg">
+              <div className="text-primary">{i.icon}</div>
+              <h3 className="mt-4 font-display text-2xl uppercase">{i.t}</h3>
+              <p className="mt-2 text-muted-foreground">{i.d}</p>
+            </div>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+function WhyFortyStrong() {
+  return (
+    <section className="py-20 md:py-28 bg-surface">
+      <div className="max-w-4xl mx-auto px-4 md:px-8">
+        <SectionLabel>Why We Built FortyStrong</SectionLabel>
+        <h2 className="mt-4 font-display uppercase text-4xl md:text-6xl text-balance">
+          We got tired of watching good people <span className="text-primary">give up on their own bodies.</span>
+        </h2>
+        <div className="mt-8 space-y-6 text-lg text-muted-foreground leading-relaxed">
+          <p>
+            Somewhere around forty, the world starts handing people a story: this is just how it goes now. The
+            stiffness. The lost strength. The slow creep of "I can't do that anymore." A doctor shrugs. A friend
+            nods. And little by little, people stop expecting more from a body that still has decades of life left
+            in it.
+          </p>
+          <p>
+            We built FortyStrong because that story is wrong — and the science says so.
+          </p>
+          <p>
+            Strength isn't something you lose to age. It's something you lose to neglect — and it's something you
+            can rebuild at forty, fifty, sixty, and beyond. Not with punishing workouts built for twenty-five-year-olds.
+            Not with a program that leaves you sore, discouraged, and quitting by week three. But with two focused
+            sessions a week, a few walks, and a plan that meets your body exactly where it is today.
+          </p>
+          <p>
+            We're not here to sell you a six-pack. We're here to help you carry your own groceries at seventy. To
+            get down on the floor with your grandkids and get back up without thinking about it. To walk into your
+            sixties stronger than you left your forties.
+          </p>
+          <p>
+            FortyStrong is new — and we're building this community right now, one member at a time. If that mission
+            speaks to you, we'd be honored to have you as one of our first.
+          </p>
+        </div>
+        <p className="mt-10 font-display uppercase text-3xl md:text-4xl text-balance">
+          Your prime isn't behind you. <span className="text-primary">It's waiting.</span>
+        </p>
       </div>
     </section>
   );
