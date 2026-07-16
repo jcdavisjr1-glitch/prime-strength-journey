@@ -159,7 +159,7 @@ function Nav() {
                   Log in
                 </Link>
                 <CtaButton href="#pricing" className="sm:hidden">
-                  Get My Free Plan
+                  See Plans
                 </CtaButton>
               </>
             )}
