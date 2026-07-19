@@ -542,7 +542,7 @@ function Pricing() {
         <div className="mt-10 p-5 bg-background border-l-4 border-primary rounded-md flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <div className="font-display text-2xl tracking-wider uppercase text-primary">30-Day Guarantee</div>
           <p className="text-muted-foreground">
-            If you don't feel stronger in 30 days, email us. We'll refund every cent. No forms. No friction.
+            If you don't feel stronger in 30 days, email <a href="mailto:coach@fortystronghealth.com" className="text-primary hover:underline">coach@fortystronghealth.com</a>. We'll refund every cent. No forms. No friction.
           </p>
         </div>
         <p className="mt-6 text-xs text-muted-foreground max-w-3xl">
