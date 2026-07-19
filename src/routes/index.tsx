@@ -824,7 +824,7 @@ function Couples() {
 
 function Cancellation() {
   const items = [
-    { t: "Single Plan", d: "30-day refund. Email us, we send it back. Plan stays yours either way." },
+    { t: "Single Plan", d: <>30-day refund. <a href="mailto:coach@fortystronghealth.com" className="text-primary hover:underline">Email us</a>, we send it back. Plan stays yours either way.</> },
     { t: "Monthly", d: "Cancel any time. One click in account settings. No forms. No phone calls." },
     { t: "Annual", d: "Cancel any time. Pro-rated refund inside 30 days. Honor the spirit, not the loophole." },
     { t: "Couples", d: "One partner cancels, the other can stay on at the regular monthly rate." },
