@@ -542,7 +542,7 @@ function Pricing() {
         <div className="mt-10 p-5 bg-background border-l-4 border-primary rounded-md flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <div className="font-display text-2xl tracking-wider uppercase text-primary">30-Day Guarantee</div>
           <p className="text-muted-foreground">
-            If you don't feel stronger in 30 days, email us. We'll refund every cent. No forms. No friction.
+            If you don't feel stronger in 30 days, email <a href="mailto:coach@fortystronghealth.com" className="text-primary hover:underline">coach@fortystronghealth.com</a>. We'll refund every cent. No forms. No friction.
           </p>
         </div>
         <p className="mt-6 text-xs text-muted-foreground max-w-3xl">
@@ -824,7 +824,7 @@ function Couples() {
 
 function Cancellation() {
   const items = [
-    { t: "Single Plan", d: "30-day refund. Email us, we send it back. Plan stays yours either way." },
+    { t: "Single Plan", d: <>30-day refund. <a href="mailto:coach@fortystronghealth.com" className="text-primary hover:underline">Email us</a>, we send it back. Plan stays yours either way.</> },
     { t: "Monthly", d: "Cancel any time. One click in account settings. No forms. No phone calls." },
     { t: "Annual", d: "Cancel any time. Pro-rated refund inside 30 days. Honor the spirit, not the loophole." },
     { t: "Couples", d: "One partner cancels, the other can stay on at the regular monthly rate." },
@@ -889,6 +889,9 @@ function Footer() {
           <a href="/privacy" className="hover:text-foreground">Privacy</a>
           <a href="/terms" className="hover:text-foreground">Terms</a>
         </div>
+      </div>
+      <div className="max-w-7xl mx-auto px-4 md:px-8 mt-6 text-sm text-muted-foreground">
+        Questions? Email us at <a href="mailto:coach@fortystronghealth.com" className="text-primary hover:underline">coach@fortystronghealth.com</a>
       </div>
       <div className="max-w-7xl mx-auto px-4 md:px-8 mt-8">
         <p className="text-xs text-muted-foreground max-w-4xl">
