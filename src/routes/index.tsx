@@ -443,6 +443,83 @@ function HowItWorks() {
   );
 }
 
+
+function ProgressionEngine() {
+  const points = [
+    { t: "No spreadsheets", d: "The math is done for you." },
+    { t: "No plateaus", d: "A 3-week review keeps your plan evolving." },
+    { t: "No guesswork", d: "Start weights are honest, built for a body over forty." },
+  ];
+  return (
+    <section id="engine" className="py-20 md:py-28 bg-surface/40">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <SectionLabel>The Progression Engine</SectionLabel>
+        <h2 className="mt-4 font-display uppercase text-4xl md:text-6xl max-w-3xl text-balance">
+          The app that knows when you're <span className="text-primary">ready for more.</span>
+        </h2>
+
+        <div className="mt-12 grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl">
+            After every set, you tell us one thing: Too Easy, Just Right, or Too Hard. That's it. FortyStrong calculates your next session's weights automatically — nudging you forward when you're ready, backing off when your body says so. Every three weeks, the app reviews your progress and adjusts your entire plan: leveling you up, swapping exercises, keeping you moving without guesswork.
+          </p>
+
+          <div className="p-6 md:p-8 bg-surface border border-border rounded-lg shadow-[var(--shadow-red)]">
+            <div className="font-display tracking-widest uppercase text-xs text-muted-foreground">
+              Today · Lift A
+            </div>
+            <div className="mt-3 flex items-baseline justify-between gap-4">
+              <div className="font-display uppercase text-2xl md:text-3xl">Goblet Squat</div>
+              <div className="font-display uppercase text-lg text-muted-foreground tabular-nums">
+                35 lb × 10
+              </div>
+            </div>
+            <div className="mt-6 font-display tracking-widest uppercase text-xs text-muted-foreground">
+              How did that feel?
+            </div>
+            <div className="mt-3 grid grid-cols-3 gap-2 md:gap-3">
+              <button
+                type="button"
+                className="py-3 rounded-md border border-border bg-background font-display tracking-wider uppercase text-sm hover:border-primary transition-colors"
+              >
+                Too Easy
+              </button>
+              <button
+                type="button"
+                className="py-3 rounded-md border border-primary bg-primary text-primary-foreground font-display tracking-wider uppercase text-sm shadow-[var(--shadow-red)]"
+              >
+                Just Right
+              </button>
+              <button
+                type="button"
+                className="py-3 rounded-md border border-border bg-background font-display tracking-wider uppercase text-sm hover:border-primary transition-colors"
+              >
+                Too Hard
+              </button>
+            </div>
+            <div className="mt-6 pt-6 border-t border-border flex items-center justify-between gap-4">
+              <div className="font-display tracking-widest uppercase text-xs text-muted-foreground">
+                Next session
+              </div>
+              <div className="font-display uppercase text-xl text-primary tabular-nums">
+                40 lb
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-14 grid md:grid-cols-3 gap-4 md:gap-6">
+          {points.map((p) => (
+            <div key={p.t} className="p-6 bg-surface border border-border rounded-lg">
+              <div className="font-display uppercase text-xl text-primary">{p.t}</div>
+              <p className="mt-2 text-muted-foreground">{p.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Pricing() {
   const { openCheckout, closeCheckout, isOpen, checkoutElement } = useStripeCheckout();
   const plans = [
