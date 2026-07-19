@@ -919,6 +919,7 @@ function Landing() {
         <WhyFortyStrong />
         <VideoProof />
         <HowItWorks />
+        <ProgressionEngine />
         <Pricing />
         <Couples />
         <FoundingMember />
