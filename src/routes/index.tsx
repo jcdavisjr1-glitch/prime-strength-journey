@@ -890,6 +890,9 @@ function Footer() {
           <a href="/terms" className="hover:text-foreground">Terms</a>
         </div>
       </div>
+      <div className="max-w-7xl mx-auto px-4 md:px-8 mt-6 text-sm text-muted-foreground">
+        Questions? Email us at <a href="mailto:coach@fortystronghealth.com" className="text-primary hover:underline">coach@fortystronghealth.com</a>
+      </div>
       <div className="max-w-7xl mx-auto px-4 md:px-8 mt-8">
         <p className="text-xs text-muted-foreground max-w-4xl">
           FortyStrong provides general fitness and educational information only. It is not medical advice. Always
