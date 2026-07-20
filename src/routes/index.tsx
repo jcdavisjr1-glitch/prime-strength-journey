@@ -643,7 +643,85 @@ function Pricing() {
   );
 }
 
+function FreePlanOptIn() {
+  const subscribe = useServerFn(subscribeToFreePlan);
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [error, setError] = useState<string | null>(null);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (status === "loading") return;
+    setStatus("loading");
+    setError(null);
+    try {
+      const res = await subscribe({ data: { email } });
+      if (res.ok) {
+        setStatus("success");
+      } else {
+        setError(res.error ?? "Something went wrong. Please try again.");
+        setStatus("error");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setStatus("error");
+    }
+  }
+
+  return (
+    <section className="py-20 md:py-28 bg-surface">
+      <div className="max-w-3xl mx-auto px-4 md:px-8 text-center">
+        <SectionLabel>Free Guide</SectionLabel>
+        <h2 className="mt-4 font-display uppercase text-4xl md:text-6xl text-balance">
+          Not ready yet? <span className="text-primary">Start free.</span>
+        </h2>
+        <p className="mt-6 text-lg text-muted-foreground">
+          Get our free guide: how to rebuild strength after forty with two workouts a week — plus a
+          simple starter plan you can begin this week.
+        </p>
+
+        {status === "success" ? (
+          <div className="mt-10 p-6 border border-primary/40 bg-primary/10 rounded-lg">
+            <p className="font-display uppercase tracking-wider text-primary text-lg">
+              Check your inbox — your free plan is on the way.
+            </p>
+          </div>
+        ) : (
+          <form onSubmit={onSubmit} className="mt-10 flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
+            <input
+              type="email"
+              required
+              autoComplete="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={status === "loading"}
+              className="flex-1 px-5 py-4 rounded-sm bg-background border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors disabled:opacity-60"
+            />
+            <button
+              type="submit"
+              disabled={status === "loading"}
+              className="font-display tracking-wider uppercase text-base px-8 py-4 rounded-sm bg-primary text-primary-foreground hover:bg-primary-glow shadow-[var(--shadow-red)] transition-all disabled:opacity-60"
+            >
+              {status === "loading" ? "Sending…" : "Send Me The Free Plan"}
+            </button>
+          </form>
+        )}
+
+        {status === "error" && error && (
+          <p className="mt-4 text-sm text-primary">{error}</p>
+        )}
+
+        <p className="mt-4 text-xs uppercase tracking-widest text-muted-foreground">
+          No spam. Unsubscribe anytime.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 function FoundingMember() {
+
   const items = [
     {
       t: "Backed by science",
