@@ -934,7 +934,7 @@ function Couples() {
 
         <div className="mt-12 grid md:grid-cols-3 gap-4 md:gap-6">
           {[
-            { n: "94%", l: "Couples who start together stay together — vs 57% who go it alone" },
+            { n: "94%", l: "Of couples who trained together stuck with the program — vs. only 57% of those who trained alone" },
             { n: "50%", l: "Of people who quit exercising cite lack of a support partner as the reason." },
             { n: "1", l: "Plan. Two people. Two dashboards." },
           ].map((s) => (
