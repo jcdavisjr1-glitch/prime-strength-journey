@@ -1002,6 +1002,7 @@ function Landing() {
         <Pricing />
         <Couples />
         <FoundingMember />
+        <FreePlanOptIn />
         <Faq />
         <Cancellation />
         <FinalCta />
